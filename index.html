@@ -101,6 +101,28 @@
   .row{display:flex;gap:10px}
   .row .btn{flex:1}
 
+  /* how-to instructions */
+  .howto{margin-top:8px}
+  .howto summary{
+    font-size:13px;font-weight:600;color:var(--blue);cursor:pointer;
+    list-style:none;padding:4px 0;
+  }
+  .howto summary::-webkit-details-marker{display:none}
+  .howto summary::before{content:'ⓘ ';font-weight:400}
+  .howto[open] summary{margin-bottom:4px}
+  .howto h4{
+    margin:10px 0 4px;font-size:11px;text-transform:uppercase;letter-spacing:.5px;
+    color:var(--muted);font-weight:700;
+  }
+  .howto ul{margin:0;padding-left:18px;list-style:disc}
+  /* beats `ol.exercises li` so the bullets keep their markers and lose the dividers */
+  .howto ul li, ol.exercises .howto ul li{
+    display:list-item;list-style:disc;font-size:14px;line-height:1.5;
+    color:var(--text);padding:2px 0;border-bottom:0;
+  }
+  .now .howto{text-align:left}
+  .now .howto summary{text-align:center}
+
   .empty{color:var(--muted);text-align:center;padding:26px 10px;font-size:14px}
   .hist{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
   .hist:last-child{border-bottom:0}
@@ -179,6 +201,179 @@ const WORKOUTS = [
     ]
   }
 ];
+
+/* ---------------- how to perform each exercise ----------------
+   Keyed by exercise name; duplicated exercises share one entry. */
+const HOWTO = {
+  'Brisk Walk or March in Place': {
+    start: ['Stand tall with your feet hip-width apart, arms relaxed by your sides.'],
+    exec: [
+      'Walk at a pace that leaves you slightly breathless but still able to talk.',
+      'Indoors, march on the spot instead, lifting each knee towards hip height.',
+      'Swing your arms naturally and keep your chest tall throughout.'
+    ]
+  },
+  'Hamstring Stretch (Straddled Legs)': {
+    start: ['Sit on the floor with your legs straight and spread wide apart.'],
+    exec: [
+      'Hinge at your hips and bend forward over one leg, keeping your back long.',
+      'Reach towards your foot until you feel a stretch down the back of your thigh.',
+      'Hold, then repeat over the other leg.'
+    ]
+  },
+  'Hamstring Stretch (Sumo Position)': {
+    start: ['Stand with your feet wider than shoulder-width, toes turned slightly out.'],
+    exec: [
+      'Hinge at your hips and fold forward, resting your hands on the floor or your shins.',
+      'Keep your back flat and let your hips sink back.',
+      'Hold where you feel the stretch through your inner thighs and hamstrings.'
+    ]
+  },
+  'Standing Hamstring Stretch': {
+    start: ['Stand tall and place one heel on the floor in front of you, toes lifted, that leg straight.'],
+    exec: [
+      'Hinge at your hips and sit back over the rear leg, keeping your back flat.',
+      'Hold when you feel the stretch behind the front thigh, then swap legs.'
+    ]
+  },
+  'Standing Forward Fold': {
+    start: ['Stand with your feet hip-width apart and a soft bend in your knees.'],
+    exec: [
+      'Hinge at your hips and fold forward, letting your head and arms hang heavy.',
+      'Rest your hands on the floor, your shins, or hold opposite elbows.',
+      'Breathe out and relax deeper; bend your knees more if the backs of your legs are tight.'
+    ]
+  },
+  'Standing Quad Stretch': {
+    start: ['Stand tall with your feet together, holding a wall or chair for balance.'],
+    exec: [
+      'Bend one knee and take hold of that ankle behind you.',
+      'Draw your heel towards your glutes, knees level and hips pressed slightly forward.',
+      'Hold, then swap sides.'
+    ]
+  },
+  'Laying Quad Stretch': {
+    start: ['Lie on one side with your legs stacked and your head resting on your lower arm.'],
+    exec: [
+      'Bend your top knee and take hold of that ankle behind you.',
+      'Draw the heel towards your glutes, keeping the knee in line with your hip.',
+      'Hold, then roll over and repeat on the other side.'
+    ]
+  },
+  "Child's Pose": {
+    start: ['Kneel on the floor with your big toes together and your knees wide apart.'],
+    exec: [
+      'Sit your hips back towards your heels and walk your hands forward.',
+      'Lower your chest and forehead towards the floor.',
+      'Hold, breathing slowly into your lower back.'
+    ]
+  },
+  'Shoulder Stretch': {
+    start: ['Stand or sit tall with your shoulders relaxed.'],
+    exec: [
+      'Bring one arm straight across your chest.',
+      'Hook your other forearm underneath and draw it closer, keeping the shoulder down.',
+      'Hold, then swap arms.'
+    ]
+  },
+  'Upper Back Stretch': {
+    start: ['Stand tall and interlace your fingers, arms out in front at chest height.'],
+    exec: [
+      'Push your hands away and round your upper back, letting your chin drop.',
+      'Hold where you feel the stretch between your shoulder blades.'
+    ]
+  },
+  'Push-Ups': {
+    start: ['Hands on the floor a little wider than your shoulders, body in a straight line from head to heels, core braced.'],
+    exec: [
+      'Bend your elbows to about 45° from your body and lower until your chest is just above the floor.',
+      'Press back up to straight arms without letting your hips sag or pike.'
+    ]
+  },
+  'Kneeling Push-Ups': {
+    start: ['Kneel with your hands a little wider than your shoulders and your ankles crossed, body in a straight line from knees to head.'],
+    exec: [
+      'Lower your chest towards the floor, elbows at about 45° from your body.',
+      'Press back up, keeping your hips in line rather than letting them sag.'
+    ]
+  },
+  'Wide Push-Ups': {
+    start: ['Hands well wider than shoulder-width, body straight from head to heels.'],
+    exec: [
+      'Lower your chest towards the floor, letting your elbows travel out to the sides.',
+      'Press back up, keeping your core braced and your hips level.'
+    ]
+  },
+  'Pike Push-Ups': {
+    start: ['From your hands and feet, walk your feet in and lift your hips high so your body makes an inverted V. Hands shoulder-width, head between your arms.'],
+    exec: [
+      'Bend your elbows to lower the top of your head towards the floor between your hands.',
+      'Keep your hips high throughout, then press back up until your arms are straight.'
+    ]
+  },
+  'Floor Tricep Dips / Diamond Push-Ups': {
+    start: ['Dips: sit with your knees bent and your hands on the floor behind you, fingers pointing forward, hips lifted. Diamond push-ups: in a push-up position, place your hands together so index fingers and thumbs form a triangle.'],
+    exec: [
+      'Dips — bend your elbows straight back to lower your hips towards the floor, then press up.',
+      'Diamond push-ups — lower your chest towards your hands with your elbows brushing your ribs, then press up.',
+      'Keep your shoulders down and away from your ears either way.'
+    ]
+  },
+  'Superman Pulls': {
+    start: ['Lie face down with your arms extended overhead and your legs straight.'],
+    exec: [
+      'Lift your chest, arms and thighs off the floor.',
+      'Pull your elbows down and back towards your ribs, squeezing your shoulder blades together.',
+      'Reach your arms forward again with control, keeping your chest lifted.'
+    ]
+  },
+  'Superman Row': {
+    start: ['Lie face down with your arms extended overhead and your legs straight.'],
+    exec: [
+      'Lift your chest and arms off the floor.',
+      'Row your elbows back towards your hips, squeezing your shoulder blades together.',
+      'Extend your arms forward again without dropping your chest.'
+    ]
+  },
+  'Prone Y-Raise': {
+    start: ['Lie face down with your arms overhead in a Y shape, thumbs pointing up, forehead resting on the floor.'],
+    exec: [
+      'Lift your arms and chest a few inches, drawing your shoulder blades down and together.',
+      'Hold for a moment at the top, then lower with control.'
+    ]
+  },
+  'Isometric Bicep Flex Hold': {
+    start: ['Stand tall with your elbows tucked at your sides, bent to 90°, palms facing up.'],
+    exec: [
+      'Squeeze your biceps hard as though curling a heavy weight, fists clenched.',
+      'Hold the tension without moving your arms, breathing steadily throughout.'
+    ]
+  },
+  'Bodyweight Squats': {
+    start: ['Stand with your feet about shoulder-width apart, toes turned slightly out, chest tall.'],
+    exec: [
+      'Push your hips back and bend your knees to lower until your thighs are near parallel to the floor.',
+      'Keep your heels down and your knees tracking over your toes.',
+      'Drive up through your mid-foot to stand tall again.'
+    ]
+  },
+  'Crunches': {
+    start: ['Lie on your back with your knees bent, feet flat on the floor and hands by your temples.'],
+    exec: [
+      'Curl your head and shoulder blades off the floor by drawing your ribs towards your hips.',
+      'Pause at the top, then lower with control.',
+      'Keep your lower back down and a gap under your chin rather than pulling on your neck.'
+    ]
+  },
+  'Bicycle Crunches': {
+    start: ['Lie on your back with your hands by your temples, knees bent and feet lifted off the floor.'],
+    exec: [
+      'Curl your shoulders up, draw one knee in and rotate the opposite elbow towards it.',
+      'Switch sides in a smooth pedalling rhythm, extending the other leg as you go.',
+      'Move from your ribs rather than pulling on your neck.'
+    ]
+  }
+};
 
 /* ---------------- storage ---------------- */
 const KEY = 'workout-tracker.history.v1';
@@ -265,6 +460,17 @@ function renderList(){
   };
 }
 
+function howtoHTML(name, open){
+  const h = HOWTO[name];
+  if(!h) return '';
+  const list = arr => '<ul>' + arr.map(l => '<li>'+esc(l)+'</li>').join('') + '</ul>';
+  return '<details class="howto"'+(open ? ' open' : '')+'>' +
+    '<summary>How to do it</summary>' +
+    '<h4>Starting position</h4>' + list(h.start) +
+    '<h4>Execution</h4>' + list(h.exec) +
+  '</details>';
+}
+
 function renderDetail(w){
   const items = w.exercises.map((ex,i) => `
     <li>
@@ -272,6 +478,7 @@ function renderDetail(w){
       <div>
         <div class="ex-name">${esc(ex.name)}</div>
         <div class="ex-sub"><span class="tag ${ex.cat}">${ex.cat}</span>${esc(detail(ex))}</div>
+        ${howtoHTML(ex.name, false)}
       </div>
     </li>`).join('');
 
@@ -339,6 +546,7 @@ function renderSession(){
       '<div class="meta" style="justify-content:center">'+esc(detail(ex))+'</div>' +
       body +
     '</div>' +
+    '<div class="card">' + howtoHTML(ex.name, true) + '</div>' +
     '<button class="btn dark" id="next">' +
       (session.index === w.exercises.length-1 ? 'Finish Workout' : 'Next Exercise') +
     '</button>' +
