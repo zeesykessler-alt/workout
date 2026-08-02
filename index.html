@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Workout Tracker</title>
+<style>
+  :root{
+    --navy:#0e1f3c;
+    --navy-2:#16305c;
+    --blue:#2f6fed;
+    --blue-soft:#e8f0ff;
+    --card:#ffffff;
+    --bg:#f2f5fb;
+    --text:#0e1f3c;
+    --muted:#6b7a99;
+    --line:#dde5f2;
+    --cardio:#e8590c;
+    --strength:#2f6fed;
+    --flex:#0d9488;
+    --ok:#16a34a;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    padding-bottom:env(safe-area-inset-bottom);
+  }
+  #app{max-width:520px;margin:0 auto;min-height:100vh;display:flex;flex-direction:column}
+
+  header{
+    background:linear-gradient(160deg,var(--navy),var(--navy-2));
+    color:#fff;padding:calc(18px + env(safe-area-inset-top)) 18px 18px;
+    border-radius:0 0 22px 22px;
+  }
+  header h1{margin:0;font-size:22px;letter-spacing:.2px}
+  header p{margin:4px 0 0;color:#9fb6dd;font-size:13px}
+  .backbar{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .back{
+    background:rgba(255,255,255,.14);border:0;color:#fff;font-size:14px;
+    padding:7px 13px;border-radius:999px;cursor:pointer
+  }
+  main{flex:1;padding:16px 14px 28px}
+
+  .card{
+    background:var(--card);border-radius:18px;padding:16px;
+    box-shadow:0 2px 10px rgba(14,31,60,.07);margin-bottom:12px;
+  }
+  button.card{display:block;width:100%;text-align:left;border:0;font:inherit;color:inherit;cursor:pointer}
+  button.card:active{transform:scale(.99)}
+  .card h2{margin:0 0 6px;font-size:17px}
+  .meta{color:var(--muted);font-size:13px;display:flex;gap:14px;flex-wrap:wrap}
+
+  .btn{
+    display:block;width:100%;border:0;border-radius:14px;padding:15px;
+    background:var(--blue);color:#fff;font-size:16px;font-weight:600;cursor:pointer;
+  }
+  .btn:disabled{opacity:.5}
+  .btn.ghost{background:var(--blue-soft);color:var(--navy)}
+  .btn.dark{background:var(--navy)}
+
+  ol.exercises{list-style:none;margin:0;padding:0}
+  ol.exercises li{
+    display:flex;gap:12px;align-items:flex-start;
+    padding:12px 0;border-bottom:1px solid var(--line);
+  }
+  ol.exercises li:last-child{border-bottom:0}
+  .num{
+    flex:0 0 26px;height:26px;border-radius:50%;background:var(--blue-soft);
+    color:var(--navy);font-size:12px;font-weight:700;display:grid;place-items:center;margin-top:2px
+  }
+  .ex-name{font-weight:600;font-size:15px}
+  .ex-sub{color:var(--muted);font-size:13px;margin-top:3px}
+  .tag{
+    display:inline-block;font-size:11px;font-weight:700;letter-spacing:.4px;
+    text-transform:uppercase;padding:2px 8px;border-radius:999px;color:#fff;margin-right:8px
+  }
+  .tag.Cardio{background:var(--cardio)}
+  .tag.Strength{background:var(--strength)}
+  .tag.Flexibility{background:var(--flex)}
+
+  /* session */
+  .progress{height:6px;border-radius:999px;background:var(--line);overflow:hidden;margin-bottom:14px}
+  .progress > i{display:block;height:100%;background:var(--blue);transition:width .25s}
+  .step-of{color:var(--muted);font-size:13px;text-align:center;margin-bottom:6px}
+  .now{text-align:center;padding:22px 16px}
+  .now h2{margin:8px 0 4px;font-size:24px;line-height:1.25}
+  .timer{
+    font-size:56px;font-weight:700;font-variant-numeric:tabular-nums;
+    margin:18px 0 6px;color:var(--navy)
+  }
+  .sets{display:flex;justify-content:center;gap:12px;margin:20px 0 6px}
+  .dot{
+    width:44px;height:44px;border-radius:50%;border:2px solid var(--line);
+    display:grid;place-items:center;font-weight:700;color:var(--muted);background:#fff
+  }
+  .dot.done{background:var(--ok);border-color:var(--ok);color:#fff}
+  .next-up{color:var(--muted);font-size:13px;text-align:center;margin-top:14px}
+  .row{display:flex;gap:10px}
+  .row .btn{flex:1}
+
+  .empty{color:var(--muted);text-align:center;padding:26px 10px;font-size:14px}
+  .hist{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--line)}
+  .hist:last-child{border-bottom:0}
+  .hist b{font-size:15px;font-weight:600;display:block}
+  .hist span{color:var(--muted);font-size:13px}
+  .section-title{margin:22px 4px 8px;font-size:13px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);font-weight:700}
+  .done-big{text-align:center;padding:30px 10px}
+  .done-big .check{font-size:52px}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+/* ---------------- data ---------------- */
+const T = (m,s=0) => ({type:'time', seconds:m*60+s});
+const S = (sets,reps) => ({type:'reps', sets, reps});
+const H = (sets,sec) => ({type:'hold', sets, seconds:sec});
+
+const WORKOUTS = [
+  {
+    id:'fb1', name:'Full Body 1 — Home', level:'Beginner', minutes:30,
+    exercises:[
+      {name:'Brisk Walk or March in Place', cat:'Cardio', ...T(10)},
+      {name:'Hamstring Stretch (Straddled Legs)', cat:'Flexibility', ...T(0,30)},
+      {name:'Standing Forward Fold', cat:'Flexibility', ...T(0,30)},
+      {name:'Standing Quad Stretch', cat:'Flexibility', ...T(0,30)},
+      {name:'Hamstring Stretch (Straddled Legs)', cat:'Flexibility', ...T(0,30)},
+      {name:'Push-Ups', cat:'Strength', ...S(3,15)},
+      {name:'Superman Pulls', cat:'Strength', ...S(3,15)},
+      {name:'Pike Push-Ups', cat:'Strength', ...S(3,15)},
+      {name:'Isometric Bicep Flex Hold', cat:'Strength', ...H(3,20)},
+      {name:'Crunches', cat:'Strength', ...S(3,15)},
+      {name:'Standing Hamstring Stretch', cat:'Flexibility', ...T(0,30)},
+      {name:'Shoulder Stretch', cat:'Flexibility', ...T(0,30)},
+      {name:'Upper Back Stretch', cat:'Flexibility', ...T(0,30)}
+    ]
+  },
+  {
+    id:'fb2', name:'Full Body 2 — Home', level:'Beginner', minutes:30,
+    exercises:[
+      {name:'Brisk Walk or March in Place', cat:'Cardio', ...T(10)},
+      {name:"Child's Pose", cat:'Flexibility', ...T(0,30)},
+      {name:'Hamstring Stretch (Straddled Legs)', cat:'Flexibility', ...T(0,30)},
+      {name:'Standing Quad Stretch', cat:'Flexibility', ...T(0,30)},
+      {name:'Hamstring Stretch (Straddled Legs)', cat:'Flexibility', ...T(0,30)},
+      {name:'Kneeling Push-Ups', cat:'Strength', ...S(3,15)},
+      {name:'Prone Y-Raise', cat:'Strength', ...S(3,15)},
+      {name:'Bodyweight Squats', cat:'Strength', ...S(3,15)},
+      {name:'Superman Row', cat:'Strength', ...S(3,15)},
+      {name:'Floor Tricep Dips / Diamond Push-Ups', cat:'Strength', ...S(3,15)},
+      {name:'Bicycle Crunches', cat:'Strength', ...S(3,15)},
+      {name:'Laying Quad Stretch', cat:'Flexibility', ...T(0,30)},
+      {name:'Hamstring Stretch (Straddled Legs)', cat:'Flexibility', ...T(0,30)},
+      {name:'Shoulder Stretch', cat:'Flexibility', ...T(0,30)},
+      {name:'Upper Back Stretch', cat:'Flexibility', ...T(0,30)}
+    ]
+  },
+  {
+    id:'fb3', name:'Full Body 3 — Home', level:'Beginner', minutes:30,
+    exercises:[
+      {name:'Standing Forward Fold', cat:'Flexibility', ...T(0,30)},
+      {name:'Brisk Walk or March in Place', cat:'Cardio', ...T(10)},
+      {name:'Hamstring Stretch (Straddled Legs)', cat:'Flexibility', ...T(0,30)},
+      {name:'Hamstring Stretch (Straddled Legs)', cat:'Flexibility', ...T(0,30)},
+      {name:'Bodyweight Squats', cat:'Strength', ...S(3,15)},
+      {name:'Superman Row', cat:'Strength', ...S(3,15)},
+      {name:'Wide Push-Ups', cat:'Strength', ...S(3,15)},
+      {name:'Floor Tricep Dips / Diamond Push-Ups', cat:'Strength', ...S(3,15)},
+      {name:'Pike Push-Ups', cat:'Strength', ...S(3,15)},
+      {name:'Crunches', cat:'Strength', ...S(1,15)},
+      {name:'Laying Quad Stretch', cat:'Flexibility', ...T(0,30)},
+      {name:'Hamstring Stretch (Sumo Position)', cat:'Flexibility', ...T(0,30)},
+      {name:'Shoulder Stretch', cat:'Flexibility', ...T(0,30)},
+      {name:'Upper Back Stretch', cat:'Flexibility', ...T(0,30)}
+    ]
+  }
+];
+
+/* ---------------- storage ---------------- */
+const KEY = 'workout-tracker.history.v1';
+function loadHistory(){
+  try{ const v = JSON.parse(localStorage.getItem(KEY)); return Array.isArray(v) ? v : []; }
+  catch(e){ return []; }
+}
+function saveHistory(h){
+  try{ localStorage.setItem(KEY, JSON.stringify(h)); }catch(e){}
+}
+
+/* ---------------- helpers ---------------- */
+const clock = s => Math.floor(s/60) + ':' + String(s%60).padStart(2,'0');
+function detail(ex){
+  if(ex.type==='time') return clock(ex.seconds);
+  if(ex.type==='hold') return ex.sets + ' sets × ' + ex.seconds + ' sec';
+  return ex.sets + ' sets × ' + ex.reps + ' reps';
+}
+function durationText(s){
+  const m = Math.round(s/60);
+  return m < 1 ? 'under a minute' : m + ' min';
+}
+function dateText(iso){
+  const d = new Date(iso);
+  return d.toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'}) +
+    ' · ' + d.toLocaleTimeString(undefined,{hour:'numeric',minute:'2-digit'});
+}
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+/* ---------------- state ---------------- */
+let view = {name:'list'};
+let session = null;
+let ticker = null;
+const app = document.getElementById('app');
+
+function go(next){ stopTicker(); view = next; render(); }
+function stopTicker(){ if(ticker){ clearInterval(ticker); ticker = null; } }
+
+/* ---------------- views ---------------- */
+function render(){
+  if(view.name==='list') return renderList();
+  if(view.name==='detail') return renderDetail(WORKOUTS.find(w=>w.id===view.id));
+  if(view.name==='session') return renderSession();
+  if(view.name==='summary') return renderSummary();
+}
+
+function shell(headerHTML, bodyHTML){
+  app.innerHTML = '<header>'+headerHTML+'</header><main>'+bodyHTML+'</main>';
+}
+
+function renderList(){
+  const history = loadHistory();
+  const cards = WORKOUTS.map(w => `
+    <button class="card" data-open="${w.id}">
+      <h2>${esc(w.name)}</h2>
+      <div class="meta">
+        <span>${w.exercises.length} exercises</span>
+        <span>~${w.minutes} min</span>
+        <span>${esc(w.level)}</span>
+      </div>
+    </button>`).join('');
+
+  const hist = history.length
+    ? history.slice(0,15).map(h => `
+        <div class="hist">
+          <div><b>${esc(h.workoutName)}</b><span>${esc(dateText(h.date))}</span></div>
+          <span>${esc(durationText(h.seconds))}</span>
+        </div>`).join('')
+    : '<div class="empty">No workouts logged yet. Finish one and it shows up here.</div>';
+
+  shell(
+    '<h1>Workout Tracker</h1><p>Bodyweight · no equipment</p>',
+    cards +
+    '<div class="section-title">History</div>' +
+    '<div class="card">' + hist + '</div>' +
+    (history.length ? '<button class="btn ghost" id="clear">Clear history</button>' : '')
+  );
+
+  app.querySelectorAll('[data-open]').forEach(b =>
+    b.onclick = () => go({name:'detail', id:b.dataset.open}));
+  const clear = document.getElementById('clear');
+  if(clear) clear.onclick = () => {
+    if(confirm('Delete all workout history?')){ saveHistory([]); render(); }
+  };
+}
+
+function renderDetail(w){
+  const items = w.exercises.map((ex,i) => `
+    <li>
+      <div class="num">${i+1}</div>
+      <div>
+        <div class="ex-name">${esc(ex.name)}</div>
+        <div class="ex-sub"><span class="tag ${ex.cat}">${ex.cat}</span>${esc(detail(ex))}</div>
+      </div>
+    </li>`).join('');
+
+  shell(
+    '<div class="backbar"><button class="back" id="back">‹ Workouts</button></div>' +
+    '<h1>'+esc(w.name)+'</h1><p>'+w.exercises.length+' exercises · ~'+w.minutes+' min · '+esc(w.level)+'</p>',
+    '<div class="card"><ol class="exercises">'+items+'</ol></div>' +
+    '<button class="btn" id="start">Start Workout</button>'
+  );
+
+  document.getElementById('back').onclick = () => go({name:'list'});
+  document.getElementById('start').onclick = () => startSession(w);
+}
+
+function startSession(w){
+  session = {
+    workout:w, index:0, setsDone:0,
+    remaining:null, running:false,
+    startedAt:Date.now()
+  };
+  go({name:'session'});
+}
+
+function currentEx(){ return session.workout.exercises[session.index]; }
+
+function renderSession(){
+  const w = session.workout, ex = currentEx();
+  const pct = (session.index / w.exercises.length) * 100;
+  const next = w.exercises[session.index+1];
+
+  let body = '';
+  if(ex.type === 'time'){
+    if(session.remaining === null) session.remaining = ex.seconds;
+    body = `
+      <div class="timer">${clock(session.remaining)}</div>
+      <div class="row">
+        <button class="btn" id="toggle">${session.running ? 'Pause' : 'Start'}</button>
+        <button class="btn ghost" id="reset">Reset</button>
+      </div>`;
+  } else if(ex.type === 'hold'){
+    if(session.remaining === null) session.remaining = ex.seconds;
+    body = `
+      <div class="timer">${clock(session.remaining)}</div>
+      ${dotsHTML(ex.sets)}
+      <div class="row">
+        <button class="btn" id="toggle">${session.running ? 'Pause' : 'Start hold'}</button>
+        <button class="btn ghost" id="setdone">Set done</button>
+      </div>`;
+  } else {
+    body = `
+      ${dotsHTML(ex.sets)}
+      <button class="btn" id="setdone">
+        ${session.setsDone >= ex.sets ? 'All sets complete' : 'Complete set ' + (session.setsDone+1) + ' of ' + ex.sets}
+      </button>`;
+  }
+
+  shell(
+    '<div class="backbar"><button class="back" id="quit">‹ Quit</button></div>' +
+    '<h1>'+esc(w.name)+'</h1><p>In progress</p>',
+    '<div class="progress"><i style="width:'+pct+'%"></i></div>' +
+    '<div class="step-of">Exercise '+(session.index+1)+' of '+w.exercises.length+'</div>' +
+    '<div class="card now">' +
+      '<span class="tag '+ex.cat+'">'+ex.cat+'</span>' +
+      '<h2>'+esc(ex.name)+'</h2>' +
+      '<div class="meta" style="justify-content:center">'+esc(detail(ex))+'</div>' +
+      body +
+    '</div>' +
+    '<button class="btn dark" id="next">' +
+      (session.index === w.exercises.length-1 ? 'Finish Workout' : 'Next Exercise') +
+    '</button>' +
+    (next ? '<div class="next-up">Up next: '+esc(next.name)+'</div>' : '')
+  );
+
+  document.getElementById('quit').onclick = () => {
+    if(confirm('Quit this workout? Progress will not be saved.')){
+      session = null; go({name:'list'});
+    }
+  };
+  document.getElementById('next').onclick = advance;
+
+  const toggle = document.getElementById('toggle');
+  if(toggle) toggle.onclick = () => { session.running ? pause() : start(); };
+  const reset = document.getElementById('reset');
+  if(reset) reset.onclick = () => { pause(); session.remaining = ex.seconds; renderSession(); };
+  const setdone = document.getElementById('setdone');
+  if(setdone) setdone.onclick = () => {
+    if(session.setsDone < ex.sets) session.setsDone++;
+    if(ex.type === 'hold'){ pause(); session.remaining = ex.seconds; }
+    renderSession();
+  };
+
+  if(session.running && !ticker) tick();
+}
+
+function dotsHTML(sets){
+  let d = '';
+  for(let i=0;i<sets;i++)
+    d += '<div class="dot'+(i < session.setsDone ? ' done' : '')+'">'+(i+1)+'</div>';
+  return '<div class="sets">'+d+'</div>';
+}
+
+function start(){ session.running = true; tick(); renderSession(); }
+function pause(){ session.running = false; stopTicker(); }
+
+function tick(){
+  stopTicker();
+  ticker = setInterval(() => {
+    session.remaining--;
+    if(session.remaining <= 0){
+      session.remaining = 0;
+      pause();
+      if(currentEx().type === 'hold' && session.setsDone < currentEx().sets){
+        session.setsDone++;
+        session.remaining = currentEx().seconds;
+      }
+      buzz();
+      renderSession();
+      return;
+    }
+    const el = app.querySelector('.timer');
+    if(el) el.textContent = clock(session.remaining);
+  }, 1000);
+}
+
+function buzz(){ if(navigator.vibrate) navigator.vibrate([120,60,120]); }
+
+function advance(){
+  pause();
+  if(session.index === session.workout.exercises.length - 1) return finish();
+  session.index++;
+  session.setsDone = 0;
+  session.remaining = null;
+  renderSession();
+}
+
+function finish(){
+  const seconds = Math.round((Date.now() - session.startedAt)/1000);
+  const entry = {
+    date: new Date().toISOString(),
+    workoutId: session.workout.id,
+    workoutName: session.workout.name,
+    seconds
+  };
+  const history = loadHistory();
+  history.unshift(entry);
+  saveHistory(history);
+  go({name:'summary', entry});
+}
+
+function renderSummary(){
+  const e = view.entry;
+  shell(
+    '<h1>Workout complete</h1><p>'+esc(e.workoutName)+'</p>',
+    '<div class="card done-big">' +
+      '<div class="check">✅</div>' +
+      '<h2>Nice work</h2>' +
+      '<div class="meta" style="justify-content:center">Time taken: '+esc(durationText(e.seconds))+'</div>' +
+    '</div>' +
+    '<button class="btn" id="home">Back to Workouts</button>'
+  );
+  document.getElementById('home').onclick = () => { session = null; go({name:'list'}); };
+}
+
+render();
+</script>
+</body>
+</html>
