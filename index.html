@@ -101,6 +101,42 @@
   .row{display:flex;gap:10px}
   .row .btn{flex:1}
 
+  /* animated figure */
+  .figwrap{
+    position:relative;background:var(--blue-soft);border-radius:14px;
+    margin:10px 0 4px;padding:6px;cursor:pointer;
+  }
+  .fig{display:block;width:100%;max-width:230px;margin:0 auto;height:auto}
+  .fig .limb{fill:none;stroke:var(--navy);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+  .fig .head{fill:var(--navy)}
+  .fig .floor{stroke:#b9c8e4;stroke-width:1.6;stroke-linecap:round}
+  .figcap{
+    position:absolute;right:10px;bottom:6px;font-size:10px;
+    letter-spacing:.4px;text-transform:uppercase;color:var(--muted);
+  }
+  .figwrap.paused .fig{opacity:.55}
+  .now .figwrap{max-width:280px;margin:12px auto 0}
+
+  /* rest between sets */
+  .rest{
+    background:var(--blue-soft);border-radius:14px;padding:14px 12px;margin-top:4px;
+  }
+  .rest-label{
+    font-size:11px;text-transform:uppercase;letter-spacing:.6px;
+    color:var(--muted);font-weight:700;
+  }
+  .rest-clock{
+    font-size:40px;font-weight:700;font-variant-numeric:tabular-nums;
+    color:var(--navy);margin:2px 0 10px;
+  }
+  .restpick{
+    display:block;margin-top:12px;font-size:13px;color:var(--muted);text-align:center;
+  }
+  .restpick select{
+    font:inherit;font-size:13px;color:var(--navy);background:#fff;
+    border:1px solid var(--line);border-radius:8px;padding:4px 6px;margin-left:4px;
+  }
+
   /* how-to instructions */
   .howto{margin-top:8px}
   .howto summary{
@@ -375,6 +411,189 @@ const HOWTO = {
   }
 };
 
+/* ---------------- animated demonstrations ----------------
+   Each exercise is drawn as a side-on stick figure built by forward
+   kinematics from joint angles, then eased between two poses on a loop.
+   Angles are degrees: 0 points straight down (limbs) or straight up
+   (torso); positive rotates towards the front of the figure (+x).
+
+   pose fields — hip:[x,y], torso, head, arm, fore, thigh, shin
+   and optional arm2/fore2/thigh2/shin2 for a second, offset limb. */
+const SEG = {torso:26, head:9, arm:13, fore:12, thigh:17, shin:16};
+const rad = d => d * Math.PI / 180;
+
+function skeleton(p){
+  const [hx,hy] = p.hip;
+  const t = rad(p.torso||0);
+  const sh = [hx + SEG.torso*Math.sin(t), hy - SEG.torso*Math.cos(t)];
+  const hd = rad((p.torso||0) + (p.head||0));
+  const head = [sh[0] + SEG.head*Math.sin(hd), sh[1] - SEG.head*Math.cos(hd)];
+
+  const limb = (from, a1, a2, l1, l2) => {
+    const r1 = rad(a1), r2 = rad(a1 + a2);
+    const mid = [from[0] + l1*Math.sin(r1), from[1] + l1*Math.cos(r1)];
+    const end = [mid[0] + l2*Math.sin(r2), mid[1] + l2*Math.cos(r2)];
+    return [mid, end];
+  };
+
+  const [el, hn]   = limb(sh, p.arm||0, p.fore||0, SEG.arm, SEG.fore);
+  const [kn, ft]   = limb(p.hip, p.thigh||0, p.shin||0, SEG.thigh, SEG.shin);
+  const arm2 = p.arm2 === undefined ? null : limb(sh, p.arm2, p.fore2||0, SEG.arm, SEG.fore);
+  const leg2 = p.thigh2 === undefined ? null : limb(p.hip, p.thigh2, p.shin2||0, SEG.thigh, SEG.shin);
+  return {head, sh, el, hn, hip:p.hip, kn, ft, arm2, leg2};
+}
+
+function lerpPose(a, b, t){
+  const out = {};
+  const keys = new Set([...Object.keys(a), ...Object.keys(b)]);
+  keys.forEach(k => {
+    const va = a[k], vb = b[k];
+    if(va === undefined || vb === undefined){ out[k] = va === undefined ? vb : va; return; }
+    out[k] = Array.isArray(va)
+      ? va.map((n,i) => n + (vb[i]-n)*t)
+      : va + (vb-va)*t;
+  });
+  return out;
+}
+
+/* two poses per exercise: the start and the finish of one repetition */
+const ANIM = {
+  'Brisk Walk or March in Place': {poses:[
+    {hip:[50,56], torso:4, arm:-25, fore:-30, thigh:-2, shin:0,  arm2:25, fore2:30, thigh2:38, shin2:-70},
+    {hip:[50,56], torso:4, arm:25, fore:30, thigh:38, shin:-70, arm2:-25, fore2:-30, thigh2:-2, shin2:0}
+  ], ms:700},
+
+  'Push-Ups': {poses:[
+    {hip:[56,74], torso:62, head:26, arm:6, fore:4, thigh:-62, shin:-8},
+    {hip:[56,80], torso:62, head:26, arm:30, fore:-74, thigh:-62, shin:-8}
+  ], ms:1500},
+  'Wide Push-Ups': {poses:[
+    {hip:[56,74], torso:62, head:26, arm:6, fore:4, thigh:-62, shin:-8},
+    {hip:[56,82], torso:62, head:26, arm:46, fore:-88, thigh:-62, shin:-8}
+  ], ms:1500},
+  'Floor Tricep Dips / Diamond Push-Ups': {poses:[
+    {hip:[56,74], torso:62, head:26, arm:6, fore:2, thigh:-62, shin:-8},
+    {hip:[56,79], torso:62, head:26, arm:16, fore:-52, thigh:-62, shin:-8}
+  ], ms:1500},
+  'Kneeling Push-Ups': {poses:[
+    {hip:[56,76], torso:62, head:26, arm:6, fore:4, thigh:-70, shin:-70},
+    {hip:[56,82], torso:62, head:26, arm:30, fore:-74, thigh:-70, shin:-70}
+  ], ms:1500},
+  'Pike Push-Ups': {poses:[
+    {hip:[52,50], torso:120, head:30, arm:10, fore:4, thigh:-18, shin:-8},
+    {hip:[52,54], torso:122, head:30, arm:30, fore:-64, thigh:-18, shin:-8}
+  ], ms:1600},
+
+  'Bodyweight Squats': {poses:[
+    {hip:[50,56], torso:2, head:0, arm:2, fore:4, thigh:0, shin:2},
+    {hip:[46,72], torso:34, head:-26, arm:64, fore:16, thigh:-40, shin:118}
+  ], ms:1800},
+
+  'Crunches': {poses:[
+    {hip:[52,86], torso:-70, head:-10, arm:-120, fore:-44, thigh:120, shin:-100},
+    {hip:[52,86], torso:-48, head:-6, arm:-104, fore:-56, thigh:120, shin:-100}
+  ], ms:1400},
+  'Bicycle Crunches': {poses:[
+    {hip:[52,86], torso:-52, head:-8, arm:-108, fore:-52, thigh:120, shin:-100, thigh2:66, shin2:-22},
+    {hip:[52,86], torso:-52, head:-8, arm:-108, fore:-52, thigh:66, shin:-22, thigh2:120, shin2:-100}
+  ], ms:900},
+
+  'Superman Pulls': {poses:[
+    {hip:[52,88], torso:-84, head:8, arm:-100, fore:-8, thigh:95, shin:4},
+    {hip:[52,86], torso:-84, head:8, arm:-34, fore:-96, thigh:95, shin:4}
+  ], ms:1500},
+  'Superman Row': {poses:[
+    {hip:[52,88], torso:-84, head:8, arm:-100, fore:-8, thigh:95, shin:4},
+    {hip:[52,86], torso:-84, head:8, arm:-24, fore:-108, thigh:95, shin:4}
+  ], ms:1500},
+  'Prone Y-Raise': {poses:[
+    {hip:[52,89], torso:-86, head:8, arm:-104, fore:-4, thigh:94, shin:3},
+    {hip:[52,87], torso:-82, head:10, arm:-122, fore:-6, thigh:94, shin:3}
+  ], ms:1600},
+
+  'Isometric Bicep Flex Hold': {poses:[
+    {hip:[50,56], torso:2, head:0, arm:4, fore:-86, thigh:0, shin:2},
+    {hip:[50,56], torso:2, head:0, arm:2, fore:-98, thigh:0, shin:2}
+  ], ms:1100},
+
+  'Standing Forward Fold': {poses:[
+    {hip:[50,56], torso:2, head:0, arm:4, fore:6, thigh:0, shin:2},
+    {hip:[50,58], torso:74, head:10, arm:-4, fore:2, thigh:0, shin:4}
+  ], ms:2200},
+  'Standing Quad Stretch': {poses:[
+    {hip:[50,56], torso:2, head:0, arm:-30, fore:-40, thigh:0, shin:2, thigh2:-5, shin2:-148},
+    {hip:[50,56], torso:2, head:0, arm:-36, fore:-48, thigh:0, shin:2, thigh2:-8, shin2:-158}
+  ], ms:2200},
+  'Standing Hamstring Stretch': {poses:[
+    {hip:[52,62], torso:26, head:-8, arm:34, fore:10, thigh:6, shin:4, thigh2:45, shin2:0},
+    {hip:[52,62], torso:50, head:-6, arm:44, fore:8, thigh:6, shin:4, thigh2:45, shin2:0}
+  ], ms:2200},
+  'Hamstring Stretch (Straddled Legs)': {poses:[
+    {hip:[40,86], torso:42, head:-10, arm:62, fore:16, thigh:80, shin:5},
+    {hip:[40,86], torso:66, head:-6, arm:76, fore:14, thigh:80, shin:5}
+  ], ms:2400},
+  'Hamstring Stretch (Sumo Position)': {poses:[
+    {hip:[50,58], torso:18, head:-6, arm:16, fore:8, thigh:-25, shin:20, thigh2:25, shin2:-20},
+    {hip:[50,60], torso:72, head:8, arm:6, fore:4, thigh:-25, shin:20, thigh2:25, shin2:-20}
+  ], ms:2400},
+  "Child's Pose": {poses:[
+    {hip:[62,74], torso:-72, head:-12, arm:-96, fore:-10, thigh:20, shin:-110},
+    {hip:[62,80], torso:-102, head:-8, arm:-104, fore:-8, thigh:20, shin:-110}
+  ], ms:2400},
+  'Laying Quad Stretch': {poses:[
+    {hip:[48,88], torso:-80, head:6, arm:24, fore:56, thigh:90, shin:98},
+    {hip:[48,88], torso:-80, head:6, arm:30, fore:62, thigh:90, shin:112}
+  ], ms:2400},
+  'Shoulder Stretch': {poses:[
+    {hip:[50,56], torso:2, head:0, arm:74, fore:26, thigh:0, shin:2, arm2:40, fore2:86},
+    {hip:[50,56], torso:2, head:0, arm:82, fore:30, thigh:0, shin:2, arm2:46, fore2:92}
+  ], ms:2200},
+  'Upper Back Stretch': {poses:[
+    {hip:[50,56], torso:2, head:0, arm:76, fore:12, thigh:0, shin:2},
+    {hip:[50,58], torso:16, head:16, arm:88, fore:8, thigh:0, shin:2}
+  ], ms:2200}
+};
+
+function figureSVG(id){
+  return '<svg class="fig" id="'+id+'" viewBox="0 0 100 100" aria-hidden="true">' +
+    '<line class="floor" x1="6" y1="92" x2="94" y2="92"/>' +
+    '<circle class="head" r="7"/>' +
+    '<polyline class="limb spine"/>' +
+    '<polyline class="limb armA"/><polyline class="limb armB"/>' +
+    '<polyline class="limb legA"/><polyline class="limb legB"/>' +
+  '</svg>';
+}
+
+const players = [];
+function stopPlayers(){ players.splice(0).forEach(id => clearInterval(id)); }
+
+function playFigure(id, name){
+  const a = ANIM[name];
+  const svg = document.getElementById(id);
+  if(!a || !svg) return;
+  const q = s => svg.querySelector(s);
+  const pts = arr => arr.map(p => p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+  const t0 = performance.now();
+
+  function frame(now){
+    if(!svg.isConnected) return;
+    // ping-pong with an ease so the turnarounds look like real reps
+    const phase = ((now - t0) % (a.ms*2)) / a.ms;
+    const raw = phase > 1 ? 2 - phase : phase;
+    const t = raw < .5 ? 2*raw*raw : 1 - 2*(1-raw)*(1-raw);
+    const s = skeleton(lerpPose(a.poses[0], a.poses[1], t));
+    q('.head').setAttribute('cx', s.head[0].toFixed(1));
+    q('.head').setAttribute('cy', s.head[1].toFixed(1));
+    q('.spine').setAttribute('points', pts([s.sh, s.hip]));
+    q('.armA').setAttribute('points', pts([s.sh, s.el, s.hn]));
+    q('.legA').setAttribute('points', pts([s.hip, s.kn, s.ft]));
+    q('.armB').setAttribute('points', s.arm2 ? pts([s.sh, ...s.arm2]) : '');
+    q('.legB').setAttribute('points', s.leg2 ? pts([s.hip, ...s.leg2]) : '');
+  }
+  frame(t0);
+  players.push(setInterval(() => frame(performance.now()), 50));
+}
+
 /* ---------------- storage ---------------- */
 const KEY = 'workout-tracker.history.v1';
 function loadHistory(){
@@ -409,7 +628,7 @@ let session = null;
 let ticker = null;
 const app = document.getElementById('app');
 
-function go(next){ stopTicker(); view = next; render(); }
+function go(next){ stopTicker(); stopPlayers(); view = next; render(); }
 function stopTicker(){ if(ticker){ clearInterval(ticker); ticker = null; } }
 
 /* ---------------- views ---------------- */
@@ -460,12 +679,17 @@ function renderList(){
   };
 }
 
+let figSeq = 0;
 function howtoHTML(name, open){
   const h = HOWTO[name];
   if(!h) return '';
   const list = arr => '<ul>' + arr.map(l => '<li>'+esc(l)+'</li>').join('') + '</ul>';
-  return '<details class="howto"'+(open ? ' open' : '')+'>' +
+  const figId = 'fig-' + (figSeq++);
+  const fig = ANIM[name] ? '<div class="figwrap" data-fig="'+figId+'" data-ex="'+esc(name)+'">' +
+      figureSVG(figId) + '<span class="figcap">tap to pause</span></div>' : '';
+  return '<details class="howto"'+(open ? ' open' : '')+' data-ex="'+esc(name)+'">' +
     '<summary>How to do it</summary>' +
+    fig +
     '<h4>Starting position</h4>' + list(h.start) +
     '<h4>Execution</h4>' + list(h.exec) +
   '</details>';
@@ -489,6 +713,7 @@ function renderDetail(w){
     '<button class="btn" id="start">Start Workout</button>'
   );
 
+  wireFigures();
   document.getElementById('back').onclick = () => go({name:'list'});
   document.getElementById('start').onclick = () => startSession(w);
 }
@@ -497,6 +722,7 @@ function startSession(w){
   session = {
     workout:w, index:0, setsDone:0,
     remaining:null, running:false,
+    resting:false, restLeft:0,
     startedAt:Date.now()
   };
   go({name:'session'});
@@ -523,16 +749,20 @@ function renderSession(){
     body = `
       <div class="timer">${clock(session.remaining)}</div>
       ${dotsHTML(ex.sets)}
-      <div class="row">
-        <button class="btn" id="toggle">${session.running ? 'Pause' : 'Start hold'}</button>
-        <button class="btn ghost" id="setdone">Set done</button>
-      </div>`;
+      ${session.resting ? restHTML() : `
+        <div class="row">
+          <button class="btn" id="toggle">${session.running ? 'Pause' : 'Start hold'}</button>
+          <button class="btn ghost" id="setdone">Set done</button>
+        </div>`}
+      ${restPickerHTML()}`;
   } else {
     body = `
       ${dotsHTML(ex.sets)}
-      <button class="btn" id="setdone">
-        ${session.setsDone >= ex.sets ? 'All sets complete' : 'Complete set ' + (session.setsDone+1) + ' of ' + ex.sets}
-      </button>`;
+      ${session.resting ? restHTML() : `
+        <button class="btn" id="setdone">
+          ${session.setsDone >= ex.sets ? 'All sets complete' : 'Complete set ' + (session.setsDone+1) + ' of ' + ex.sets}
+        </button>`}
+      ${restPickerHTML()}`;
   }
 
   shell(
@@ -568,10 +798,102 @@ function renderSession(){
   if(setdone) setdone.onclick = () => {
     if(session.setsDone < ex.sets) session.setsDone++;
     if(ex.type === 'hold'){ pause(); session.remaining = ex.seconds; }
+    // rest only when another set is still to come
+    if(session.setsDone < ex.sets) startRest();
     renderSession();
   };
 
+  const skip = document.getElementById('restskip');
+  if(skip) skip.onclick = () => { stopRest(); renderSession(); };
+  const add = document.getElementById('restadd');
+  if(add) add.onclick = () => {
+    session.restLeft += 15;
+    const el = app.querySelector('.rest-clock');
+    if(el) el.textContent = clock(session.restLeft);
+  };
+  const secs = document.getElementById('restsecs');
+  if(secs) secs.onchange = () => {
+    try{ localStorage.setItem(REST_KEY, secs.value); }catch(e){}
+  };
+
+  wireFigures();
   if(session.running && !ticker) tick();
+}
+
+/* ---------------- rest between sets ---------------- */
+const REST_KEY = 'workout-tracker.rest.v1';
+const REST_CHOICES = [30, 45, 60, 90];
+function restSeconds(){
+  const v = parseInt(localStorage.getItem(REST_KEY), 10);
+  return REST_CHOICES.includes(v) ? v : 60;
+}
+function restHTML(){
+  return '<div class="rest">' +
+    '<div class="rest-label">Rest</div>' +
+    '<div class="rest-clock">'+clock(session.restLeft)+'</div>' +
+    '<div class="row">' +
+      '<button class="btn ghost" id="restadd">+15s</button>' +
+      '<button class="btn" id="restskip">Skip rest</button>' +
+    '</div>' +
+  '</div>';
+}
+function restPickerHTML(){
+  const opts = REST_CHOICES.map(v =>
+    '<option value="'+v+'"'+(v===restSeconds() ? ' selected' : '')+'>'+v+'s</option>').join('');
+  return '<label class="restpick">Rest between sets ' +
+    '<select id="restsecs">'+opts+'</select></label>';
+}
+function startRest(){
+  session.resting = true;
+  session.restLeft = restSeconds();
+  restTick();
+}
+function stopRest(){
+  session.resting = false;
+  if(restTimer){ clearInterval(restTimer); restTimer = null; }
+}
+let restTimer = null;
+function restTick(){
+  if(restTimer) clearInterval(restTimer);
+  restTimer = setInterval(() => {
+    session.restLeft--;
+    if(session.restLeft <= 0){
+      stopRest();
+      buzz();
+      renderSession();
+      return;
+    }
+    const el = app.querySelector('.rest-clock');
+    if(el) el.textContent = clock(session.restLeft);
+  }, 1000);
+}
+
+/* ---------------- figures ---------------- */
+function wireFigures(){
+  stopPlayers();
+  app.querySelectorAll('.figwrap').forEach(wrap => {
+    const id = wrap.dataset.fig, name = wrap.dataset.ex;
+    const details = wrap.closest('details');
+    if(!details || details.open) playFigure(id, name);
+    wrap.onclick = () => {
+      wrap.classList.toggle('paused');
+      if(wrap.classList.contains('paused')){
+        stopPlayers();
+        // restart the others that are still meant to be running
+        app.querySelectorAll('.figwrap:not(.paused)').forEach(o => {
+          const d = o.closest('details');
+          if(!d || d.open) playFigure(o.dataset.fig, o.dataset.ex);
+        });
+        wrap.querySelector('.figcap').textContent = 'tap to play';
+      } else {
+        playFigure(id, name);
+        wrap.querySelector('.figcap').textContent = 'tap to pause';
+      }
+    };
+  });
+  app.querySelectorAll('details.howto').forEach(d => {
+    d.addEventListener('toggle', () => wireFigures(), {once:true});
+  });
 }
 
 function dotsHTML(sets){
@@ -608,6 +930,7 @@ function buzz(){ if(navigator.vibrate) navigator.vibrate([120,60,120]); }
 
 function advance(){
   pause();
+  stopRest();
   if(session.index === session.workout.exercises.length - 1) return finish();
   session.index++;
   session.setsDone = 0;
