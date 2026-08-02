@@ -137,6 +137,12 @@
     border:1px solid var(--line);border-radius:8px;padding:4px 6px;margin-left:4px;
   }
 
+  .videolink{
+    display:block;text-align:center;margin:8px 0 2px;padding:11px;
+    background:var(--navy);color:#fff;border-radius:12px;
+    font-size:14px;font-weight:600;text-decoration:none;
+  }
+  .videolink:active{opacity:.85}
   /* how-to instructions */
   .howto{margin-top:8px}
   .howto summary{
@@ -679,6 +685,21 @@ function renderList(){
   };
 }
 
+
+/* search wording that returns clearer demos than the bare exercise name */
+const VIDEO = {
+  'Brisk Walk or March in Place': 'marching in place exercise',
+  'Floor Tricep Dips / Diamond Push-Ups': 'floor tricep dips bodyweight',
+  'Isometric Bicep Flex Hold': 'isometric bicep hold no weights',
+  'Superman Pulls': 'superman pull exercise back',
+  'Superman Row': 'superman row exercise floor',
+  'Prone Y-Raise': 'prone y raise floor',
+  'Hamstring Stretch (Straddled Legs)': 'seated straddle hamstring stretch',
+  'Hamstring Stretch (Sumo Position)': 'wide stance standing hamstring stretch',
+  'Laying Quad Stretch': 'side lying quad stretch',
+  'Upper Back Stretch': 'upper back rhomboid stretch standing'
+};
+
 let figSeq = 0;
 function howtoHTML(name, open){
   const h = HOWTO[name];
@@ -687,9 +708,13 @@ function howtoHTML(name, open){
   const figId = 'fig-' + (figSeq++);
   const fig = ANIM[name] ? '<div class="figwrap" data-fig="'+figId+'" data-ex="'+esc(name)+'">' +
       figureSVG(figId) + '<span class="figcap">tap to pause</span></div>' : '';
+  // the drawn figure shows the movement path; this shows a real person doing it
+  const q = encodeURIComponent('how to do ' + (VIDEO[name] || name) + ' proper form');
+  const vid = '<a class="videolink" target="_blank" rel="noopener"' +
+    ' href="https://www.youtube.com/results?search_query='+q+'">▶ Watch a real demo</a>';
   return '<details class="howto"'+(open ? ' open' : '')+' data-ex="'+esc(name)+'">' +
     '<summary>How to do it</summary>' +
-    fig +
+    fig + vid +
     '<h4>Starting position</h4>' + list(h.start) +
     '<h4>Execution</h4>' + list(h.exec) +
   '</details>';
