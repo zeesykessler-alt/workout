@@ -485,9 +485,9 @@ const ANIM = {
     {hip:[56,76], torso:62, head:26, arm:6, fore:4, thigh:-70, shin:-70},
     {hip:[56,82], torso:62, head:26, arm:30, fore:-74, thigh:-70, shin:-70}
   ], ms:1500},
-  'Pike Push-Ups': {poses:[
-    {hip:[52,50], torso:120, head:30, arm:10, fore:4, thigh:-18, shin:-8},
-    {hip:[52,54], torso:122, head:30, arm:30, fore:-64, thigh:-18, shin:-8}
+  'Pike Push-Ups': {floor:79, poses:[
+    {hip:[54,40], torso:118, head:32, arm:6, fore:4, thigh:-10, shin:-8},
+    {hip:[54,44], torso:120, head:32, arm:32, fore:-72, thigh:-10, shin:-8}
   ], ms:1600},
 
   'Bodyweight Squats': {poses:[
@@ -504,22 +504,25 @@ const ANIM = {
     {hip:[52,86], torso:-52, head:-8, arm:-108, fore:-52, thigh:66, shin:-22, thigh2:120, shin2:-100}
   ], ms:900},
 
-  'Superman Pulls': {poses:[
-    {hip:[52,88], torso:-84, head:8, arm:-100, fore:-8, thigh:95, shin:4},
-    {hip:[52,86], torso:-84, head:8, arm:-34, fore:-96, thigh:95, shin:4}
+  // seen from above — from the side, a prone figure is just a flat line
+  'Superman Pulls': {floor:null, poses:[
+    {hip:[50,58], torso:0, head:0, arm:146, fore:10,  arm2:-146, fore2:-10, thigh:6, shin:2, thigh2:-6, shin2:-2},
+    {hip:[50,58], torso:0, head:0, arm:100, fore:-84, arm2:-100, fore2:84,  thigh:6, shin:2, thigh2:-6, shin2:-2}
   ], ms:1500},
-  'Superman Row': {poses:[
-    {hip:[52,88], torso:-84, head:8, arm:-100, fore:-8, thigh:95, shin:4},
-    {hip:[52,86], torso:-84, head:8, arm:-24, fore:-108, thigh:95, shin:4}
+  'Superman Row': {floor:null, poses:[
+    {hip:[50,58], torso:0, head:0, arm:144, fore:12,  arm2:-144, fore2:-12, thigh:6, shin:2, thigh2:-6, shin2:-2},
+    {hip:[50,58], torso:0, head:0, arm:92,  fore:-92, arm2:-92,  fore2:92,  thigh:6, shin:2, thigh2:-6, shin2:-2}
   ], ms:1500},
-  'Prone Y-Raise': {poses:[
-    {hip:[52,89], torso:-86, head:8, arm:-104, fore:-4, thigh:94, shin:3},
-    {hip:[52,87], torso:-82, head:10, arm:-122, fore:-6, thigh:94, shin:3}
+  'Prone Y-Raise': {floor:null, poses:[
+    {hip:[50,58], torso:0, head:0, arm:132, fore:8, arm2:-132, fore2:-8, thigh:6, shin:2, thigh2:-6, shin2:-2},
+    {hip:[50,56], torso:0, head:0, arm:146, fore:6, arm2:-146, fore2:-6, thigh:6, shin:2, thigh2:-6, shin2:-2}
   ], ms:1600},
 
+  // side on: the point of this one is elbows pinned at the ribs with the
+  // forearms held level, which a front view cannot show at all
   'Isometric Bicep Flex Hold': {poses:[
-    {hip:[50,56], torso:2, head:0, arm:4, fore:-86, thigh:0, shin:2},
-    {hip:[50,56], torso:2, head:0, arm:2, fore:-98, thigh:0, shin:2}
+    {hip:[50,56], torso:2, head:0, arm:8, fore:-88, arm2:-4, fore2:-80, thigh:4, shin:2, thigh2:-6, shin2:0},
+    {hip:[50,56], torso:2, head:0, arm:4, fore:-100, arm2:-8, fore2:-92, thigh:4, shin:2, thigh2:-6, shin2:0}
   ], ms:1100},
 
   'Standing Forward Fold': {poses:[
@@ -578,6 +581,9 @@ function playFigure(id, name){
   const svg = document.getElementById(id);
   if(!a || !svg) return;
   const q = s => svg.querySelector(s);
+  const floor = q('.floor');
+  if(a.floor === null){ floor.style.display = 'none'; }
+  else { floor.style.display = ''; floor.setAttribute('y1', a.floor||92); floor.setAttribute('y2', a.floor||92); }
   const pts = arr => arr.map(p => p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
   const t0 = performance.now();
 
