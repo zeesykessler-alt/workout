@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>KLBD Archive — Spine Labels</title>
+<style>
+  /* ---- Avery L7171 geometry: A4, 200 x 60 mm, 4 per sheet ----
+     Side margins 5mm, top/bottom margins 28.5mm, no gap between labels.
+     Nudge with --offset-x / --offset-y if your printer is off by a millimetre. */
+  :root{
+    --label-w: 200mm;
+    --label-h: 60mm;
+    --margin-x: 5mm;
+    --margin-y: 28.5mm;
+    --offset-x: 0mm;
+    --offset-y: 0mm;
+    --navy: #1c2b6b;
+    --navy-dark: #141f4e;
+    --ink: #10162f;
+    --rule: #c8cde4;
+  }
+  @page { size: A4 portrait; margin: 0; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{
+    font-family: "Times New Roman", Times, Georgia, serif;
+    background:#e9ecf4;
+    color:var(--ink);
+  }
+  .sheet{
+    width:210mm; height:297mm;
+    padding: calc(var(--margin-y) + var(--offset-y)) calc(var(--margin-x) + var(--offset-x));
+    background:#fff;
+    margin:0 auto 10mm;
+    box-shadow:0 2px 12px rgba(0,0,0,.18);
+    page-break-after: always;
+  }
+  .sheet:last-child{ page-break-after:auto; }
+
+  .label{
+    width:var(--label-w); height:var(--label-h);
+    display:flex; align-items:stretch;
+    overflow:hidden;
+    background:#fff;
+  }
+  /* Cut/alignment guides — screen only, never printed */
+  .label{ outline:.2mm dashed #b9c0d8; outline-offset:-.1mm; }
+  @media print { .label{ outline:none; } }
+
+  /* --- left number block --- */
+  .tab{
+    flex:0 0 34mm;
+    background:var(--navy);
+    color:#fff;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center;
+    text-align:center;
+    padding:3mm 2mm;
+  }
+  .tab .word{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:8pt; letter-spacing:.18em; text-transform:uppercase;
+    opacity:.85; line-height:1;
+  }
+  .tab .num{
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight:700; font-size:30pt; line-height:1; margin-top:1.5mm;
+  }
+
+  /* --- right content block --- */
+  .body{
+    flex:1 1 auto;
+    padding:3.5mm 5mm 3.5mm 5.5mm;
+    display:flex; flex-direction:column;
+    min-width:0;
+  }
+  .head{
+    display:flex; align-items:baseline; gap:3mm;
+    border-bottom:.5mm solid var(--navy);
+    padding-bottom:1.2mm; margin-bottom:1.8mm;
+    flex:0 0 auto;
+  }
+  .brand{
+    font-family: Arial, Helvetica, sans-serif;
+    font-weight:700; font-size:11.5pt; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--navy-dark);
+    white-space:nowrap;
+  }
+  .sub{
+    font-family: Arial, Helvetica, sans-serif;
+    font-size:7.5pt; letter-spacing:.1em; text-transform:uppercase;
+    color:#5b6486; margin-left:auto; white-space:nowrap;
+  }
+  .items{
+    flex:0 1 auto; min-height:0; margin:auto 0;
+    max-height:100%;
+    columns:1; column-gap:6mm; column-rule:.2mm solid var(--rule);
+    font-size:11pt; line-height:1.28;
+  }
+  .items.two{ columns:2; }
+  .items li{
+    list-style:none;
+    break-inside:avoid;
+    padding-left:3.4mm;
+    position:relative;
+  }
+  .items li::before{
+    content:"";
+    position:absolute; left:0; top:.42em;
+    width:1.4mm; height:1.4mm; border-radius:50%;
+    background:var(--navy);
+  }
+
+  /* screen-only helper bar */
+  .toolbar{
+    max-width:210mm; margin:8mm auto 4mm; padding:4mm 5mm;
+    background:#fff; border:1px solid #ccd2e6; border-radius:6px;
+    font-family:Arial, Helvetica, sans-serif; font-size:13px; color:#333;
+    line-height:1.5;
+  }
+  .toolbar b{ color:var(--navy); }
+  @media print { .toolbar{ display:none; } .sheet{ box-shadow:none; margin:0; } body{ background:#fff; } }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <b>KLBD Archive spine labels</b> — Avery <b>L7171</b> (200 &times; 60&nbsp;mm, 4 per A4 sheet), files 1&ndash;30 across 8 sheets.<br>
+  Print at <b>100% / Actual size</b> (no "fit to page", no headers &amp; footers) on the label sheet, portrait.
+  Test on plain paper first and hold it against a label sheet; if it sits a millimetre off, adjust
+  <code>--offset-x</code> / <code>--offset-y</code> at the top of this file.
+  Edit the <code>FILES</code> list at the bottom to change any wording.
+</div>
+
+<div id="out"></div>
+
+<script>
+const FILES = [
+ {"n":1,"items":["Ako","Ambassador Hotel","An Inspector Calls","Beachcroft (1967)","Beis Din Guidelines of Kashrus & Food Ingredients","Beis Din Review","BestFoods / Unilever","Biotechnology and Kashrus","Blooms","Bugs"]},
+ {"n":2,"items":["Carmine","Carmelli","Cheese","Chestnuts","Cigarettes – Cigars","Chief Rabbinate","Conjoint Relating to Pesach ’88–’02"]},
+ {"n":3,"items":["Dayan Lerner","El Al"]},
+ {"n":4,"items":["Factory Visits Review (Cert. Process Project)","Gelatine","Spielsinger & Abraham / Wagner / Kinloss","Kavana"]},
+ {"n":5,"items":["Hillel House","Hindquarters","Holland","Honey","Innocent Drinks","Israel","Isinglass","Kashrus Commission","Kashrus for the Community","Kashrus List (Confectionary) 1962","Marmite"]},
+ {"n":6,"items":["Halacha Files","Magazine Articles","Newspaper Articles"]},
+ {"n":7,"items":["Marketing","MBD","Medicines","Misc.","Milk","Norwood Ravenswood","Overview of Kashrus Division Procedure","Obituaries / Memorial Addresses"]},
+ {"n":8,"items":["Pesach","OU"]},
+ {"n":9,"items":["Rakusens","Paris Beis Din","Shmita","Shomer Seminar 2002","Various Correspondence","Whisky Research & Articles AOP","Wines"]},
+ {"n":10,"items":["Chief Rabbinate Strasbourg","Review of Financial Structure of LBD 1994","The White House","Travel","Vinegar","Waxing of Fruit & Veg","Xanthan Gum","Zhangjiagang Legal"]},
+ {"n":11,"items":["Sugar – Tate & Lyle – Cube Sugar – Pesach","Tartaric Acid","Tomor Margarine","Transactions of the Jewish Historical Society of England","Very Interesting Articles"]},
+ {"n":12,"items":["Queries – Shaalos","The Mesorah of Kosher Birds & Mammals","Shellac"]},
+ {"n":13,"items":["Rabbi Conway: Presentation, Synopsis and Brief Biography","Kitnios","Important Papers","Feasibility of National Kosher UK Certification","Buckingham Palace Goes Kosher","Kashrus Meeting of the Beis Din","Report: Kashrus & Shechita Activities","Letters & Kashrus Regulations","Court Cases (JFS, Rosie Ben Shushan)","Legal (CER)"]},
+ {"n":14,"items":["Kashrus / KLBD Review","Kashrus Certificates","Kashrus Committee Meetings","Kashrus Financial Issues","Kashrus Issues","Kashrus Promotion Campaign","KLBD Articles","Policy Decisions with Regard to the Kashrus Guide"]},
+ {"n":15,"items":["Factory Visits"]},
+ {"n":16,"items":["CDs","Cassettes","Photos"]},
+ {"n":17,"items":["Rabbi Conway’s Notebooks"]},
+ {"n":18,"items":["Rabbi Silver"]},
+ {"n":19,"items":["Rabbi Silver"]},
+ {"n":20,"items":["Fish List","Analysis of Vertebrae Structure"]},
+ {"n":21,"items":["Scales","Oils","British Museum","Fish Found in Italy","List & Info of Fish B–K"]},
+ {"n":22,"items":["List & Info of Fish L–S"]},
+ {"n":23,"items":["Newspapers","Tuna Rabbinic Material (1)"]},
+ {"n":24,"items":["Tuna: Scientific Material (2)","Tuna: Scientific Material (3)"]},
+ {"n":25,"items":["Tuna + Fish: Miscellaneous incl. Specimen of Bonito Scales (4)","Miscellaneous (5)","W. Simon & Sons Tuna Production","List of Fish (T)","Fishes & Crustaceans of Cyprus","Kosher & Non-Kosher Fish in Various Countries"]},
+ {"n":26,"items":["Tuna: Scientific Names, Description, Illustrations (6 & 7)","Correspondence (8)","Biblical / Talmudical (9)","Rabbinical Literature (10)","Nomenclature (11)"]},
+ {"n":27,"items":["Turbot"]},
+ {"n":28,"items":["Turbot"]},
+ {"n":29,"items":["Shechita","Divrei Torah","JFS","Kedassia"]},
+ {"n":30,"items":["Eruv"]}
+]
+;
+
+const out = document.getElementById('out');
+let sheet = null;
+FILES.forEach((f, i) => {
+  if (i % 4 === 0) { sheet = document.createElement('div'); sheet.className = 'sheet'; out.appendChild(sheet); }
+
+  const label = document.createElement('div');
+  label.className = 'label';
+
+  const tab = document.createElement('div');
+  tab.className = 'tab';
+  tab.innerHTML = '<div class="word">File</div><div class="num">' + f.n + '</div>';
+
+  const body = document.createElement('div');
+  body.className = 'body';
+  body.innerHTML = '<div class="head"><div class="brand">KLBD Archive</div>' +
+                   '<div class="sub">London Beth Din &middot; Kashrus Division</div></div>';
+
+  const ul = document.createElement('ul');
+  ul.className = 'items' + (f.items.length > 6 ? ' two' : '');
+  f.items.forEach(t => { const li = document.createElement('li'); li.textContent = t; ul.appendChild(li); });
+  body.appendChild(ul);
+
+  label.appendChild(tab); label.appendChild(body);
+  sheet.appendChild(label);
+
+  // shrink text until the contents fit the 60mm label
+  let size = f.items.length <= 2 ? 18 : f.items.length <= 3 ? 15 : (f.items.length <= 6 ? 13 : 11);
+  ul.style.fontSize = size + 'pt';
+  while (ul.scrollHeight > ul.getBoundingClientRect().height + 1 && size > 6.5) {
+    size -= 0.25;
+    ul.style.fontSize = size + 'pt';
+  }
+});
+</script>
+</body>
+</html>
