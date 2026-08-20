@@ -15,8 +15,8 @@
     --panel-mute:#5c6484;
     --shadow:0 1px 3px rgba(20,31,78,.14), 0 10px 30px rgba(20,31,78,.10);
 
-    --label-w:200mm;
-    --label-h:60mm;
+    --label-w:200mm;   /* die-cut, along the spine   */
+    --label-h:60mm;    /* die-cut, across the spine  */
     --margin-x:5mm;
     --margin-y:28.5mm;
     --offset-x:0mm;
@@ -24,20 +24,14 @@
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --ground:#12141c;
-      --panel:#1c1f2b;
-      --panel-line:#2f3548;
-      --panel-ink:#dfe3f0;
-      --panel-mute:#9aa2be;
+      --ground:#12141c; --panel:#1c1f2b; --panel-line:#2f3548;
+      --panel-ink:#dfe3f0; --panel-mute:#9aa2be;
       --shadow:0 1px 3px rgba(0,0,0,.5), 0 14px 36px rgba(0,0,0,.45);
     }
   }
   :root[data-theme="dark"]{
-    --ground:#12141c;
-    --panel:#1c1f2b;
-    --panel-line:#2f3548;
-    --panel-ink:#dfe3f0;
-    --panel-mute:#9aa2be;
+    --ground:#12141c; --panel:#1c1f2b; --panel-line:#2f3548;
+    --panel-ink:#dfe3f0; --panel-mute:#9aa2be;
     --shadow:0 1px 3px rgba(0,0,0,.5), 0 14px 36px rgba(0,0,0,.45);
   }
 
@@ -51,51 +45,37 @@
   }
 
   /* ---------- screen-only instruction panel ---------- */
-  .guide{
-    max-width:210mm;
-    margin:0 auto;
-    padding:26px 24px 22px;
-  }
+  .guide{ max-width:210mm; margin:0 auto; padding:26px 24px 22px; }
   .eyebrow{
     font-size:11px; font-weight:600; letter-spacing:.22em; text-transform:uppercase;
     color:var(--panel-mute);
   }
   .guide h1{
     font-size:clamp(26px,4.5vw,38px); font-weight:700; letter-spacing:-.015em;
-    line-height:1.08; margin:.35em 0 .3em; text-wrap:balance;
-    color:var(--panel-ink);
+    line-height:1.08; margin:.35em 0 .3em; text-wrap:balance; color:var(--panel-ink);
   }
   .lede{
     font-family:"Source Serif 4",Georgia,serif;
     font-size:17px; line-height:1.55; max-width:62ch; color:var(--panel-mute);
   }
   .steps{
-    margin-top:20px;
-    background:var(--panel);
-    border:1px solid var(--panel-line);
-    border-radius:4px;
-    box-shadow:var(--shadow);
-    display:grid; gap:0;
+    margin-top:20px; background:var(--panel);
+    border:1px solid var(--panel-line); border-radius:4px;
+    box-shadow:var(--shadow); display:grid; gap:0;
   }
   .step{
     display:grid; grid-template-columns:26px 1fr; gap:14px;
-    padding:15px 20px;
-    border-top:1px solid var(--panel-line);
+    padding:15px 20px; border-top:1px solid var(--panel-line);
     font-size:14.5px; line-height:1.55;
   }
-  .step:first-child{ border-top:0; }
   .stepgroup{
-    padding:13px 20px 11px;
-    border-top:1px solid var(--panel-line);
+    padding:13px 20px 11px; border-top:1px solid var(--panel-line);
     font-size:10.5px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
     color:var(--panel-mute);
     background:color-mix(in srgb, var(--panel-line) 22%, transparent);
   }
   .stepgroup:first-child{ border-top:0; }
-  .step .k{
-    font-size:12px; font-weight:700; letter-spacing:.04em;
-    color:var(--navy); padding-top:2px;
-  }
+  .step .k{ font-size:12px; font-weight:700; letter-spacing:.04em; color:var(--navy); padding-top:2px; }
   :root[data-theme="dark"] .step .k{ color:#93a6e8; }
   @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .step .k{ color:#93a6e8; } }
   .step b{ font-weight:600; color:var(--panel-ink); }
@@ -103,8 +83,7 @@
   .step p{ color:var(--panel-mute); }
   kbd{
     font-family:"Archivo",monospace; font-size:12.5px; font-weight:600;
-    border:1px solid var(--panel-line); border-radius:3px;
-    padding:1px 5px; color:var(--panel-ink);
+    border:1px solid var(--panel-line); border-radius:3px; padding:1px 5px; color:var(--panel-ink);
   }
   .rule{
     max-width:210mm; margin:30px auto 0; padding:0 24px;
@@ -119,60 +98,68 @@
   .sheet{
     width:210mm; height:297mm;
     padding: calc(var(--margin-y) + var(--offset-y)) calc(var(--margin-x) + var(--offset-x));
-    background:#ffffff;
-    margin:0 auto 12mm;
-    box-shadow:var(--shadow);
-    page-break-after:always;
+    background:#ffffff; margin:0 auto 12mm;
+    box-shadow:var(--shadow); page-break-after:always;
   }
   .sheet:last-child{ page-break-after:auto; }
+  .sheet, .label, .hdr{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
 
-  .sheet, .label, .tab{
-    -webkit-print-color-adjust:exact;
-    print-color-adjust:exact;
-  }
+  /* The die-cut sits landscape on the sheet; the artwork is portrait and
+     rotated into it, so it reads correctly once stuck down a standing spine. */
   .label{
+    position:relative;
     width:var(--label-w); height:var(--label-h);
-    display:flex; align-items:stretch; overflow:hidden;
-    background:#ffffff; color:var(--ink);
+    overflow:hidden; background:#ffffff;
     outline:.2mm dashed #b9c0d8; outline-offset:-.1mm;
   }
-  .tab{
-    flex:0 0 34mm;
-    background:var(--navy); color:#fff;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
-    text-align:center; padding:3mm 2mm;
+  .spine{
+    position:absolute; left:50%; top:50%;
+    width:var(--label-h); height:var(--label-w);      /* 60mm x 200mm, upright */
+    transform:translate(-50%,-50%) rotate(-90deg);
+    transform-origin:center center;
+    display:flex; flex-direction:column;
+    color:var(--ink);
   }
-  .tab .word{
-    font-size:8pt; font-weight:500; letter-spacing:.2em; text-transform:uppercase;
-    opacity:.82; line-height:1;
-  }
-  .tab .num{ font-weight:700; font-size:30pt; line-height:1; margin-top:1.5mm; letter-spacing:-.02em; }
 
-  .body{ flex:1 1 auto; padding:3.5mm 5mm 3.5mm 5.5mm; display:flex; flex-direction:column; min-width:0; }
-  .head{
-    display:flex; align-items:baseline; gap:3mm;
-    border-bottom:.5mm solid var(--navy);
-    padding-bottom:1.2mm; margin-bottom:1.8mm; flex:0 0 auto;
+  .hdr{
+    flex:0 0 auto;
+    background:var(--navy); color:#fff;
+    padding:7mm 4mm 6mm; text-align:center;
   }
-  .brand{
-    font-weight:700; font-size:11.5pt; letter-spacing:.14em; text-transform:uppercase;
-    color:var(--navy-deep); white-space:nowrap;
+  .hdr .brand{
+    font-size:9.5pt; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+    line-height:1.15;
   }
-  .sub{
-    font-size:7.5pt; font-weight:500; letter-spacing:.1em; text-transform:uppercase;
-    color:#5b6486; margin-left:auto; white-space:nowrap;
+  .hdr .div{
+    width:14mm; height:.4mm; background:rgba(255,255,255,.45);
+    margin:2.6mm auto 2.4mm;
   }
+  .hdr .word{
+    font-size:7pt; font-weight:500; letter-spacing:.24em; text-transform:uppercase;
+    opacity:.8; line-height:1;
+  }
+  .hdr .num{ font-size:32pt; font-weight:700; line-height:1; margin-top:1.5mm; letter-spacing:-.02em; }
+
   .items{
     font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
-    flex:0 1 auto; min-height:0; margin:auto 0; max-height:100%;
-    columns:1; column-gap:6mm; column-rule:.2mm solid var(--hair);
-    font-size:11pt; line-height:1.3;
+    flex:1 1 auto; min-height:0;
+    padding:9mm 5mm 7mm;
+    display:flex; flex-direction:column; justify-content:flex-start; gap:2.6mm;
+    font-size:12pt; line-height:1.25;
+    overflow:hidden;
   }
-  .items.two{ columns:2; }
-  .items li{ list-style:none; break-inside:avoid; padding-left:3.4mm; position:relative; }
+  .items li{ list-style:none; padding-left:3.6mm; position:relative; }
   .items li::before{
-    content:""; position:absolute; left:0; top:.45em;
+    content:""; position:absolute; left:0; top:.46em;
     width:1.4mm; height:1.4mm; border-radius:50%; background:var(--navy);
+  }
+  .foot{
+    flex:0 0 auto;
+    padding:0 4mm 5mm; text-align:center;
+    border-top:.3mm solid var(--hair); margin:0 4mm;
+    padding-top:3mm;
+    font-size:6.5pt; font-weight:500; letter-spacing:.13em; text-transform:uppercase;
+    color:#5b6486;
   }
 
   @media print{
@@ -182,31 +169,29 @@
     .sheet{ box-shadow:none; margin:0; }
     .label{ outline:none; }
   }
-  @media (max-width:230mm){
-    .sheets{ overflow-x:auto; }
-  }
+  @media (max-width:230mm){ .sheets{ overflow-x:auto; } }
 </style>
 
 <div class="guide">
   <div class="eyebrow">Avery L7171 &middot; 200 &times; 60&nbsp;mm &middot; 4 per A4 sheet</div>
   <h1>KLBD Archive spine labels</h1>
-  <p class="lede">All thirty archive files, laid out at true size across eight sheets. Print straight from this page onto label stock &mdash; what you see below is exactly where the ink lands. Settings below are for Chrome or Edge on Windows, printing to the Lexmark XC9255.</p>
+  <p class="lede">All thirty archive files, laid out at true size across eight sheets. Each label is printed sideways on the sheet so that it reads the right way up once it is on a binder standing on the shelf &mdash; turn the page a quarter-turn clockwise to proofread it. Settings below are for Chrome or Edge on Windows, printing to the Lexmark XC9255.</p>
 
   <div class="steps">
     <div class="stepgroup">In Chrome or Edge on the PC</div>
     <div class="step"><span class="k">01</span><p>Press <kbd>Ctrl</kbd> + <kbd>P</kbd> and pick the <b>Lexmark XC9255</b>. Open <b>More settings</b>.</p></div>
-    <div class="step"><span class="k">02</span><p>Tick <b>Background graphics</b>. Without it the navy blocks print blank &mdash; this is the one setting people miss.</p></div>
+    <div class="step"><span class="k">02</span><p>Tick <b>Background graphics</b>. Without it the navy panels print blank &mdash; this is the one setting people miss.</p></div>
     <div class="step"><span class="k">03</span><p>Set <b>Scale</b> to <b>Custom &rarr; 100</b>. Chrome&rsquo;s &ldquo;Default&rdquo; scale quietly shrinks the page to fit the printable area, which throws the alignment out by a few millimetres.</p></div>
-    <div class="step"><span class="k">04</span><p>Set <b>Margins</b> to <b>None</b>, <b>Paper size</b> to <b>A4</b>, and untick <b>Headers and footers</b>. Leave two-sided off.</p></div>
+    <div class="step"><span class="k">04</span><p>Keep <b>Layout</b> on <b>Portrait</b> &mdash; the sheet is portrait even though each label sits sideways on it. Set <b>Margins</b> to <b>None</b>, <b>Paper size</b> to <b>A4</b>, and untick <b>Headers and footers</b>.</p></div>
 
     <div class="stepgroup">At the Lexmark</div>
-    <div class="step"><span class="k">05</span><p>Load the label sheets in the <b>multipurpose / bypass tray</b> on the side, face down, not in a paper cassette. Cassettes bend the sheet tightly and can peel labels off inside the machine.</p></div>
+    <div class="step"><span class="k">05</span><p>Load the label sheets in the <b>multipurpose / bypass tray</b> on the side, not in a paper cassette. Cassettes bend the sheet tightly and can peel labels off inside the machine.</p></div>
     <div class="step"><span class="k">06</span><p>On the touchscreen set that tray&rsquo;s <b>paper type</b> to <b>Labels</b> and <b>size</b> to <b>A4</b>. This slows the feed and adjusts the fuser &mdash; running labels as plain paper is what causes jams and adhesive on the rollers.</p></div>
     <div class="step"><span class="k">07</span><p>The XC9255 takes A3, so double-check it hasn&rsquo;t auto-picked an A3 tray. If the machine holds jobs for badge or PIN release, release it there as usual.</p></div>
 
     <div class="stepgroup">Before you commit the label stock</div>
     <div class="step"><span class="k">08</span><p>Print <b>one test on plain paper</b> and hold it against a label sheet at a window. The dashed guides should sit on the die-cut edges. Feed label sheets <b>one at a time</b>.</p></div>
-    <div class="step"><span class="k">09</span><p>If it lands a millimetre out, adjust <b>--offset-x</b> / <b>--offset-y</b> in the source file. Sheet 1 carries files 1&ndash;4, sheet 2 files 5&ndash;8, and so on.</p></div>
+    <div class="step"><span class="k">09</span><p>Peel each label and apply it down the binder spine, <b>number at the top</b>. If the print lands a millimetre out, adjust <b>--offset-x</b> / <b>--offset-y</b> in the source file. Sheet 1 carries files 1&ndash;4, sheet 2 files 5&ndash;8, and so on.</p></div>
   </div>
 </div>
 
@@ -229,38 +214,47 @@ FILES.forEach((f, i) => {
   const label = document.createElement('div');
   label.className = 'label';
 
-  const tab = document.createElement('div');
-  tab.className = 'tab';
-  tab.innerHTML = '<div class="word">File</div><div class="num">' + f.n + '</div>';
-
-  const body = document.createElement('div');
-  body.className = 'body';
-  body.innerHTML = '<div class="head"><div class="brand">KLBD Archive</div>' +
-                   '<div class="sub">London Beth Din &middot; Kashrus Division</div></div>';
+  const spine = document.createElement('div');
+  spine.className = 'spine';
+  spine.innerHTML =
+    '<div class="hdr">' +
+      '<div class="brand">KLBD<br>Archive</div>' +
+      '<div class="div"></div>' +
+      '<div class="word">File</div>' +
+      '<div class="num">' + f.n + '</div>' +
+    '</div>';
 
   const ul = document.createElement('ul');
-  ul.className = 'items' + (f.items.length > 6 ? ' two' : '');
+  ul.className = 'items';
   f.items.forEach(t => {
     const li = document.createElement('li');
     li.textContent = t;
     ul.appendChild(li);
   });
-  body.appendChild(ul);
+  spine.appendChild(ul);
 
-  label.appendChild(tab);
-  label.appendChild(body);
+  const foot = document.createElement('div');
+  foot.className = 'foot';
+  foot.textContent = 'London Beth Din \u00b7 Kashrus Division';
+  spine.appendChild(foot);
+
+  label.appendChild(spine);
   sheet.appendChild(label);
 });
 
-// Shrink each contents list until it fits inside its 60mm label.
+// Shrink each contents list until it fits the 200mm spine.
 function fit(){
   document.querySelectorAll('.items').forEach(ul => {
     const n = ul.children.length;
-    let size = n <= 2 ? 18 : n <= 3 ? 15 : n <= 6 ? 13 : 11;
+    let size = n <= 2 ? 20 : n <= 4 ? 17 : n <= 7 ? 14 : 12;
+    let gap  = n <= 4 ? 4 : n <= 7 ? 3 : 2.2;
     ul.style.fontSize = size + 'pt';
-    while (ul.scrollHeight > ul.getBoundingClientRect().height + 1 && size > 6.5) {
+    ul.style.gap = gap + 'mm';
+    while (ul.scrollHeight > ul.clientHeight + 1 && size > 6.5) {
       size -= 0.25;
+      gap = Math.max(1.2, gap - 0.06);
       ul.style.fontSize = size + 'pt';
+      ul.style.gap = gap + 'mm';
     }
   });
 }

@@ -3,6 +3,10 @@
 Print-ready spine labels for the 30 KLBD Archive lever-arch files, laid out for
 **Avery L7171** sheets (A4, 200 × 60 mm, 4 labels per sheet) — 8 sheets in total.
 
+Each label's artwork is portrait (60 mm wide × 200 mm tall) and rotated 90° into
+the landscape die-cut, so it reads the right way up once applied down the spine
+of a binder standing on a shelf. The sheet itself still prints portrait.
+
 - `klbd-archive-labels.html` — the editable template. Open in a browser and print.
 - `klbd-archive-labels.pdf` — the same thing rendered, if you just want to print.
 
@@ -13,6 +17,7 @@ In the browser print dialog, under **More settings**:
 - Tick **Background graphics** — without it the navy blocks print blank.
 - **Scale: Custom → 100** (Chrome's "Default" shrinks to fit the printable area).
 - **Margins: None**, **Paper size: A4**, **Headers and footers** off, two-sided off.
+- Leave **Layout** on **Portrait** — the sheet is portrait even though each label sits sideways on it.
 
 At the printer:
 
