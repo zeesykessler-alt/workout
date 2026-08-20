@@ -6,11 +6,24 @@ Print-ready spine labels for the 30 KLBD Archive lever-arch files, laid out for
 - `klbd-archive-labels.html` — the editable template. Open in a browser and print.
 - `klbd-archive-labels.pdf` — the same thing rendered, if you just want to print.
 
-## Printing
+## Printing (Chrome/Edge on Windows → Lexmark XC9255)
 
-Print at **100% / Actual size** — no "fit to page", no headers and footers,
-A4 portrait, single-sided. Do a test run on plain paper and hold it over a label
-sheet before committing a sheet of labels.
+In the browser print dialog, under **More settings**:
+
+- Tick **Background graphics** — without it the navy blocks print blank.
+- **Scale: Custom → 100** (Chrome's "Default" shrinks to fit the printable area).
+- **Margins: None**, **Paper size: A4**, **Headers and footers** off, two-sided off.
+
+At the printer:
+
+- Load label sheets in the **multipurpose / bypass tray**, not a cassette —
+  cassettes bend the sheet tightly enough to peel labels off inside the machine.
+- Set that tray's **paper type to Labels** and **size to A4** on the touchscreen,
+  so the feed slows and the fuser adjusts.
+- The XC9255 is A3-capable, so confirm it hasn't auto-selected an A3 tray.
+
+Do a test run on plain paper and hold it over a label sheet before committing
+label stock, and feed label sheets one at a time.
 
 ## Adjusting
 

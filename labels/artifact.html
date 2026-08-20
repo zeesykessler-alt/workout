@@ -84,6 +84,14 @@
     font-size:14.5px; line-height:1.55;
   }
   .step:first-child{ border-top:0; }
+  .stepgroup{
+    padding:13px 20px 11px;
+    border-top:1px solid var(--panel-line);
+    font-size:10.5px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--panel-mute);
+    background:color-mix(in srgb, var(--panel-line) 22%, transparent);
+  }
+  .stepgroup:first-child{ border-top:0; }
   .step .k{
     font-size:12px; font-weight:700; letter-spacing:.04em;
     color:var(--navy); padding-top:2px;
@@ -118,6 +126,10 @@
   }
   .sheet:last-child{ page-break-after:auto; }
 
+  .sheet, .label, .tab{
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
   .label{
     width:var(--label-w); height:var(--label-h);
     display:flex; align-items:stretch; overflow:hidden;
@@ -178,13 +190,23 @@
 <div class="guide">
   <div class="eyebrow">Avery L7171 &middot; 200 &times; 60&nbsp;mm &middot; 4 per A4 sheet</div>
   <h1>KLBD Archive spine labels</h1>
-  <p class="lede">All thirty archive files, laid out at true size across eight sheets. Print this page straight onto label stock &mdash; what you see below is exactly where the ink lands.</p>
+  <p class="lede">All thirty archive files, laid out at true size across eight sheets. Print straight from this page onto label stock &mdash; what you see below is exactly where the ink lands. Settings below are for Chrome or Edge on Windows, printing to the Lexmark XC9255.</p>
 
   <div class="steps">
-    <div class="step"><span class="k">01</span><p>Print with <kbd>Ctrl</kbd>/<kbd>&#8984;</kbd> + <kbd>P</kbd>. Set paper to <b>A4 portrait</b>, scale to <b>100% or "Actual size"</b> &mdash; not "Fit to page" &mdash; and turn <b>headers and footers off</b>.</p></div>
-    <div class="step"><span class="k">02</span><p>Run one test on <b>plain paper</b> and hold it against a label sheet at a window. The dashed guides should sit on the die-cut edges.</p></div>
-    <div class="step"><span class="k">03</span><p>If it lands a millimetre out, nudge <b>--offset-x</b> / <b>--offset-y</b> in the source file, or use your printer driver&rsquo;s margin offset.</p></div>
-    <div class="step"><span class="k">04</span><p>Feed the label sheets one at a time, and mind the sheet order &mdash; sheet 1 carries files 1&ndash;4, sheet 2 files 5&ndash;8, and so on.</p></div>
+    <div class="stepgroup">In Chrome or Edge on the PC</div>
+    <div class="step"><span class="k">01</span><p>Press <kbd>Ctrl</kbd> + <kbd>P</kbd> and pick the <b>Lexmark XC9255</b>. Open <b>More settings</b>.</p></div>
+    <div class="step"><span class="k">02</span><p>Tick <b>Background graphics</b>. Without it the navy blocks print blank &mdash; this is the one setting people miss.</p></div>
+    <div class="step"><span class="k">03</span><p>Set <b>Scale</b> to <b>Custom &rarr; 100</b>. Chrome&rsquo;s &ldquo;Default&rdquo; scale quietly shrinks the page to fit the printable area, which throws the alignment out by a few millimetres.</p></div>
+    <div class="step"><span class="k">04</span><p>Set <b>Margins</b> to <b>None</b>, <b>Paper size</b> to <b>A4</b>, and untick <b>Headers and footers</b>. Leave two-sided off.</p></div>
+
+    <div class="stepgroup">At the Lexmark</div>
+    <div class="step"><span class="k">05</span><p>Load the label sheets in the <b>multipurpose / bypass tray</b> on the side, face down, not in a paper cassette. Cassettes bend the sheet tightly and can peel labels off inside the machine.</p></div>
+    <div class="step"><span class="k">06</span><p>On the touchscreen set that tray&rsquo;s <b>paper type</b> to <b>Labels</b> and <b>size</b> to <b>A4</b>. This slows the feed and adjusts the fuser &mdash; running labels as plain paper is what causes jams and adhesive on the rollers.</p></div>
+    <div class="step"><span class="k">07</span><p>The XC9255 takes A3, so double-check it hasn&rsquo;t auto-picked an A3 tray. If the machine holds jobs for badge or PIN release, release it there as usual.</p></div>
+
+    <div class="stepgroup">Before you commit the label stock</div>
+    <div class="step"><span class="k">08</span><p>Print <b>one test on plain paper</b> and hold it against a label sheet at a window. The dashed guides should sit on the die-cut edges. Feed label sheets <b>one at a time</b>.</p></div>
+    <div class="step"><span class="k">09</span><p>If it lands a millimetre out, adjust <b>--offset-x</b> / <b>--offset-y</b> in the source file. Sheet 1 carries files 1&ndash;4, sheet 2 files 5&ndash;8, and so on.</p></div>
   </div>
 </div>
 

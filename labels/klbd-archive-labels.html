@@ -36,6 +36,10 @@
   }
   .sheet:last-child{ page-break-after:auto; }
 
+  .sheet, .label, .tab{
+    -webkit-print-color-adjust:exact;
+    print-color-adjust:exact;
+  }
   .label{
     width:var(--label-w); height:var(--label-h);
     display:flex; align-items:stretch;
