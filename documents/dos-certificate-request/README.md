@@ -11,7 +11,7 @@ Request package for a plain copy of the initial Certificate of Incorporation of
 | County of Record | Kings |
 | File Number | 981211000178 |
 | Document Length | 6 pages |
-| Copy Type | Plain (uncertified) — $5.00 |
+| Copy Type | Plain (uncertified) — $5.00, paid by DOS-1515 card authorization |
 
 ## Files
 
@@ -30,16 +30,20 @@ telephone (718.971.9716, Ext. 0) appear in the return-instructions block.
 
 ## Before printing
 
-Fill in: the letter date, the firm matter number (`ZLF[______]`), and the
-signature. Choose "check" or "money order" in the fee paragraph and delete the
-unused term.
+The letter is dated August 23, 2026. Fill in: the firm matter number
+(`ZLF[______]`) and the signature. Payment is by the DOS-1515 Credit Card/
+Debit Card Authorization Form — download the current official form at
+<https://dos.ny.gov/system/files/documents/2025/07/1515-f-07-2025-update.pdf>
+(not mirrored here; dos.ny.gov is unreachable from the build environment).
 
 ## Mailing checklist
 
 1. Signed letter.
-2. Check or money order for $5.00 payable to **NYS Department of State** — or a
-   completed NYS DOS Credit Card/Debit Card Authorization Form in its place.
+2. Completed and signed DOS-1515 Credit Card/Debit Card Authorization Form.
 3. Self-addressed return envelope.
+
+Mail — do not email: the request is fulfilled against the mailed original,
+and card details should never be sent by email.
 
 Mail to:
 
