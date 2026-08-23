@@ -21,20 +21,16 @@ Request package for a plain copy of the initial Certificate of Incorporation of
 | `ZLF-DOS-Certificate-Request-Outlook-Draft.eml` | Same request as an unsent email draft, PDF attached — open or drag into Outlook Drafts |
 | `ZLF-DOS-Certificate-Request-Email-Text.txt` | Subject + body as plain text, for pasting into a new message |
 
-Signed by Zeesy Kessler, Legal Administrator, over the firm name. The page-2
-continuation header follows the firm's existing letter format (firm name /
-matter reference / date / page number).
+Page 1 carries the firm's actual stationery artwork (ZLF monogram, address,
+telephone, website footer), taken from a firm document supplied by the user.
+Page 2 uses the firm's text continuation-header format (firm name / matter
+reference / date / page number). Signed by Zeesy Kessler, Legal Administrator,
+over the firm name. Address (483 Chestnut Street, Cedarhurst, NY 11516) and
+telephone (718.971.9716, Ext. 0) appear in the return-instructions block.
 
 ## Before printing
 
-The letterhead masthead carries placeholders that must be filled in, because
-the firm's street address, telephone, and fax were not recoverable from
-SharePoint (the letterhead template in OneDrive is admin-locked) — replace
-`[STREET ADDRESS, SUITE]`, `[CITY], NEW YORK [ZIP]`, `TEL [(___) ___-____]`,
-and `FAX [(___) ___-____]`.
-
-Also fill in: the letter date, the firm matter number (`ZLF[______]`), the
-mailing address and daytime telephone in the return-instructions block, and the
+Fill in: the letter date, the firm matter number (`ZLF[______]`), and the
 signature. Choose "check" or "money order" in the fee paragraph and delete the
 unused term.
 

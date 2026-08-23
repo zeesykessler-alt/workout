@@ -49,10 +49,10 @@ Please mail the copy to the attention of the undersigned at the firm's address
 below.
 
   Contact:            Zeesy Kessler, Legal Administrator
-  Firm:               The Zweig Law Firm, P.C.
-  Mailing Address:    [Street Address, Suite]
-                      [City], New York [ZIP]
-  Daytime Telephone:  [(___) ___-____]
+  Firm:               The Zweig Law Firm P.C.
+  Mailing Address:    483 Chestnut Street
+                      Cedarhurst, New York 11516
+  Daytime Telephone:  718.971.9716, Ext. 0
   Email Address:      zkessler@zweigpc.com
 
 Thank you for your assistance with this request. If any additional information
@@ -61,7 +61,9 @@ and it will be supplied without delay.
 
 Very truly yours,
 
-THE ZWEIG LAW FIRM, P.C.
+THE ZWEIG LAW FIRM P.C.
+483 Chestnut Street | Cedarhurst, NY 11516
+718.971.9716 | Ext 0. | www.thezweiglawfirm.com
 
 Zeesy Kessler
 Legal Administrator
