@@ -17,16 +17,26 @@ Request package for a plain copy of the initial Certificate of Incorporation of
 
 | File | Purpose |
 | --- | --- |
-| `DOS-Certificate-of-Incorporation-Request-Letter.pdf` | Ready-to-print formal letter for mailing to Albany |
-| `DOS-Certificate-Request-Outlook-Draft.eml` | Same request as an unsent email draft, PDF attached — open or drag into Outlook Drafts |
-| `DOS-Certificate-Request-Email-Text.txt` | Subject + body as plain text, for pasting into a new message |
+| `ZLF-DOS-Certificate-of-Incorporation-Request-Letter.pdf` | Ready-to-print letter on The Zweig Law Firm, P.C. letterhead |
+| `ZLF-DOS-Certificate-Request-Outlook-Draft.eml` | Same request as an unsent email draft, PDF attached — open or drag into Outlook Drafts |
+| `ZLF-DOS-Certificate-Request-Email-Text.txt` | Subject + body as plain text, for pasting into a new message |
+
+Signed by Zeesy Kessler, Legal Administrator, over the firm name. The page-2
+continuation header follows the firm's existing letter format (firm name /
+matter reference / date / page number).
 
 ## Before printing
 
-Fill in every bracketed placeholder in the PDF: name, firm/organization, street
-address, city/state/ZIP, daytime telephone, the letter date, and the signature
-block. Confirm the pre-filled email address. Choose "check" or "money order" in
-the fee paragraph and delete the unused term.
+The letterhead masthead carries placeholders that must be filled in, because
+the firm's street address, telephone, and fax were not recoverable from
+SharePoint (the letterhead template in OneDrive is admin-locked) — replace
+`[STREET ADDRESS, SUITE]`, `[CITY], NEW YORK [ZIP]`, `TEL [(___) ___-____]`,
+and `FAX [(___) ___-____]`.
+
+Also fill in: the letter date, the firm matter number (`ZLF[______]`), the
+mailing address and daytime telephone in the return-instructions block, and the
+signature. Choose "check" or "money order" in the fee paragraph and delete the
+unused term.
 
 ## Mailing checklist
 
