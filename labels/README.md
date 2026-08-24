@@ -16,6 +16,9 @@ In the browser print dialog, under **More settings**:
 
 - Tick **Background graphics** — without it the navy blocks print blank.
 - **Scale: Custom → 100** (Chrome's "Default" shrinks to fit the printable area).
+- **Layout: Landscape.** The label sheet is fed portrait as usual; printing
+  landscape is what lays each 200 mm die-cut along the sheet with the artwork
+  upright on the spine.
 - **Margins: None**, **Paper size: A4**, **Headers and footers** off, two-sided off.
 - Leave **Layout** on **Portrait** — the sheet is portrait even though each label sits sideways on it.
 
@@ -40,5 +43,14 @@ label stock, and feed label sheets one at a time.
 - **Colour:** `--navy` sets the number block and rules; it is matched to the
   existing blue binders.
 
-Label geometry assumed: 5 mm side margins, 28.5 mm top/bottom margins, no gaps
-between labels.
+## Layout note
+
+Each label's artwork is authored upright (60 mm wide × 200 mm tall) on a
+landscape 297 × 210 mm sheet, four across. Nothing is rotated in CSS: a rotated,
+absolutely-positioned box is mis-placed by Chromium's print pagination, which
+corrupts every label in the generated PDF while still looking correct on screen.
+Verify changes against the rendered PDF, not the browser view.
+
+Label geometry, measured on the sheet as printed: labels 28.5 mm in from each
+short edge and 5 mm from each long edge, four 60 mm labels with no gaps between
+them.
