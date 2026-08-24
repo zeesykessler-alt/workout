@@ -19,6 +19,7 @@
     --label-h:200mm;   /* die-cut, along the spine  */
     --margin-x:28.5mm;  /* to the first label along the sheet */
     --margin-y:5mm;     /* to the label's long edge           */
+    --bleed:4mm;       /* navy header overprint past the die-cut */
     --offset-x:0mm;
     --offset-y:0mm;
   }
@@ -115,8 +116,9 @@
   .label{
     flex:0 0 auto;
     width:var(--label-w); height:var(--label-h);
-    overflow:hidden; background:#ffffff;
+    background:#ffffff;
     outline:.2mm dashed #b9c0d8; outline-offset:-.1mm;
+    /* not overflow:hidden — the header bleeds past the die-cut on purpose */
   }
   .spine{
     width:100%; height:100%;
@@ -127,7 +129,13 @@
   .hdr{
     flex:0 0 auto;
     background:var(--navy); color:#fff;
-    padding:7mm 4mm 6mm; text-align:center;
+    text-align:center;
+    /* Full bleed: the navy runs past the label's top and sides so a
+       millimetre of printer drift can't leave a white sliver at the die-cut.
+       Overspill lands on the backing between labels, and neighbouring
+       headers are the same navy, so the overlap is invisible. */
+    margin:calc(var(--bleed) * -1) calc(var(--bleed) * -1) 0;
+    padding:calc(7mm + var(--bleed)) calc(4mm + var(--bleed)) 6mm;
   }
   .hdr .brand{
     font-size:9.5pt; font-weight:700; letter-spacing:.15em; text-transform:uppercase;

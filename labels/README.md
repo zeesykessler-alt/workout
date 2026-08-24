@@ -57,6 +57,16 @@ label stock, and feed label sheets one at a time.
 Renders the landscape sheet with Playwright, then rotates the pages to portrait
 with PyMuPDF. It fails the build if any label's contents overflow.
 
+## Bleed
+
+The navy header overprints the die-cut by `--bleed` (4 mm) on its top and both
+sides, so a millimetre of printer drift cannot leave a white sliver along the
+label edge. This is safe because all four headers sit at the same end of the
+sheet and are the same colour: sideways overspill lands either on the backing
+between die-cuts or on an identically-coloured neighbour, and the top overspill
+lands on the sheet margin. `.label` deliberately does **not** set
+`overflow: hidden`, or the bleed would be clipped away.
+
 ## Layout note
 
 Each label's artwork is authored upright (60 mm wide × 200 mm tall) on a
