@@ -177,6 +177,31 @@
     color:#5b6486;
   }
 
+
+  /* ---------- calibration marks (print on the sheet margins, never on a label) ----------
+     The die-cut is fixed; the only variable is whether the printer reproduced
+     the page at exactly 100%. These land on the backing and get discarded. */
+  .sheet{ position:relative; }
+  .marks{ position:absolute; inset:0; pointer-events:none; color:#8b93ad; }
+  .marks .tick{
+    position:absolute; width:.3mm; background:#8b93ad;
+    top:0; height:3.5mm;
+  }
+  .marks .tick.b{ top:auto; bottom:0; }
+  .ruler{
+    position:absolute; left:9mm; top:calc(50% - 50mm);
+    width:2.6mm; height:100mm;
+    border:.25mm solid #8b93ad; border-left:0; border-right:0;
+  }
+  .ruler::before{
+    content:""; position:absolute; left:1.15mm; top:0; bottom:0; width:.3mm; background:#8b93ad;
+  }
+  .ruler span{
+    position:absolute; left:4.5mm; top:50%;
+    transform:translateY(-50%) rotate(90deg); transform-origin:left center;
+    white-space:nowrap; font-size:6.5pt; letter-spacing:.12em; text-transform:uppercase;
+  }
+
   @media print{
     body{ background:#fff; padding:0; }
     .guide, .rule{ display:none; }
@@ -205,8 +230,9 @@
     <div class="step"><span class="k">07</span><p>The XC9255 takes A3, so double-check it hasn&rsquo;t auto-picked an A3 tray. If the machine holds jobs for badge or PIN release, release it there as usual.</p></div>
 
     <div class="stepgroup">Before you commit the label stock</div>
-    <div class="step"><span class="k">08</span><p>Print <b>one test on plain paper</b> and hold it against a label sheet at a window. The dashed guides should sit on the die-cut edges. Feed label sheets <b>one at a time</b>.</p></div>
-    <div class="step"><span class="k">09</span><p>Peel each label and apply it down the binder spine, <b>number at the top</b>. If the print lands a millimetre out, adjust <b>--offset-x</b> / <b>--offset-y</b> in the source file. Sheet 1 carries files 1&ndash;4, sheet 2 files 5&ndash;8, and so on.</p></div>
+    <div class="step"><span class="k">08</span><p>Print <b>one test on plain paper</b> and measure the <b>100&nbsp;mm bar</b> printed in the margin, outer edge to outer edge. If it reads short (96&ndash;98&nbsp;mm is typical), the printer is shrinking the page &mdash; find and turn off &ldquo;fit to printable area&rdquo; in the driver. Nothing else will line up until that bar measures 100.</p></div>
+    <div class="step"><span class="k">09</span><p>Then lay that test over a label sheet at a window. The <b>five ticks</b> along the top and bottom margins should sit exactly on the die-cut lines between labels. If the bar reads 100 but the ticks drift, tell me by how much at the last tick and I&rsquo;ll correct the spacing.</p></div>
+    <div class="step"><span class="k">10</span><p>Feed label sheets <b>one at a time</b>. Peel each label and apply it down the binder spine, <b>number at the top</b>. If the print lands a millimetre out, adjust <b>--offset-x</b> / <b>--offset-y</b> in the source file. Sheet 1 carries files 1&ndash;4, sheet 2 files 5&ndash;8, and so on.</p></div>
   </div>
 </div>
 
@@ -255,6 +281,25 @@ FILES.forEach((f, i) => {
 
   label.appendChild(spine);
   sheet.appendChild(label);
+
+  if (i % 4 === 3 || i === FILES.length - 1) {
+  // Calibration marks: boundary ticks on the die-cut lines, and a true 100mm bar.
+  const marks = document.createElement('div');
+  marks.className = 'marks';
+  for (let k = 0; k <= 4; k++) {
+    for (const cls of ['tick', 'tick b']) {
+      const t = document.createElement('div');
+      t.className = cls;
+      t.style.left = `calc(var(--margin-x) + var(--offset-x) + ${k} * var(--label-w))`;
+      marks.appendChild(t);
+    }
+  }
+  const ruler = document.createElement('div');
+  ruler.className = 'ruler';
+  ruler.innerHTML = '<span>100 mm &mdash; outer edge to outer edge</span>';
+  marks.appendChild(ruler);
+  sheet.appendChild(marks);
+  }
 });
 
 // Shrink each contents list until it fits the 200mm spine.

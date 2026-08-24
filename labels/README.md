@@ -57,6 +57,25 @@ label stock, and feed label sheets one at a time.
 Renders the landscape sheet with Playwright, then rotates the pages to portrait
 with PyMuPDF. It fails the build if any label's contents overflow.
 
+## Calibration marks
+
+Every sheet carries, in the margins (they land on the backing, never on a label):
+
+- a **100 mm bar** down the left margin, measured outer edge to outer edge
+- **five ticks** on the top and bottom margins, on the die-cut lines between labels
+
+They separate the two things that can go wrong:
+
+| Bar measures | Ticks line up | Meaning |
+|---|---|---|
+| 100 mm | yes | correct — print it |
+| short (96–98 mm) | no | printer is shrinking the page; turn off "fit to printable area" |
+| 100 mm | no | this template's label pitch is wrong — adjust `--label-w` / `--margin-x` |
+
+A print measured off a photo of real output came back at 96.7%, drifting from
++2.2 mm at the first label to −6 mm at the last, which is scaling rather than a
+geometry error. Bleed cannot compensate for that.
+
 ## Bleed
 
 The navy header overprints the die-cut by `--bleed` (4 mm) on its top and both
