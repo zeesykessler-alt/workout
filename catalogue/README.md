@@ -4,8 +4,12 @@ An A4 catalogue of the archive, built from Carol's spreadsheet export.
 
 - `klbd-archive-catalogue.pdf` — the deliverable, 18 pages, A4 portrait.
 - `catalogue.html` — the rendered document.
-- `source.tsv` — Carol's spreadsheet, tab-separated (File Name / Description / File No.).
-- `build.py` — regenerates `catalogue.html` from `source.tsv`.
+- `files.py` — **the authoritative structure**: Carol's per-file listing, files 1–30,
+  plus the sub-lists she enumerated inside entries, the conflicts between her two
+  sheets, and the spellings regularised.
+- `source.tsv` — Carol's earlier detail export (File Name / Description / File No.),
+  used only for the descriptive bullets.
+- `build.py` — regenerates `catalogue.html` from `files.py` + `source.tsv`.
 
 ## Two sections
 
@@ -24,8 +28,13 @@ An A4 catalogue of the archive, built from Carol's spreadsheet export.
 To correct or add content, edit `source.tsv` and re-run — never edit the HTML by
 hand, it is generated.
 
-## Note on file numbers
+## Two sources, one structure
 
-The spreadsheet's "Page No." column is the file (binder) number, 1–30. One
-conflict with the original archive index used for the spine labels: **Shechita**
-is filed at 26 here and at 29 there. The catalogue follows the spreadsheet.
+Carol supplied two sheets: a per-file listing and an A–Z index. Where they
+disagree the catalogue follows the **per-file listing**, and the disagreement is
+printed in the Points to Check appendix rather than silently resolved. The
+detail export is a third sheet, matched onto the structure by name (see
+`ALIASES` in `build.py` for the cases where the wording differs).
+
+Note: **Shechita is File 29**, confirmed by both of Carol's sheets. An earlier
+detail export had it at 26; that was wrong.
