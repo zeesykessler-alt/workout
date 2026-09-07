@@ -28,13 +28,19 @@ An A4 catalogue of the archive, built from Carol's spreadsheet export.
 To correct or add content, edit `source.tsv` and re-run — never edit the HTML by
 hand, it is generated.
 
-## Two sources, one structure
+## Verified against the shelf
 
-Carol supplied two sheets: a per-file listing and an A–Z index. Where they
-disagree the catalogue follows the **per-file listing**, and the disagreement is
-printed in the Points to Check appendix rather than silently resolved. The
-detail export is a third sheet, matched onto the structure by name (see
-`ALIASES` in `build.py` for the cases where the wording differs).
+The binders are labelled and in place. Every entry name and file number in
+Section One was checked against the spine labels photographed on the shelf:
+**30 of 30 files match**. That also settled the six places Carol's two sheets
+disagreed — all six in favour of her per-file listing (see `RESOLVED`).
 
-Note: **Shechita is File 29**, confirmed by both of Carol's sheets. An earlier
-detail export had it at 26; that was wrong.
+One item is still open (`OUTSTANDING`): **Marriage**, File 5 — on Carol's sheet
+but not named on the spine label. It is kept in the catalogue.
+
+Also confirmed: **Shechita is File 29**. An earlier detail export had it at 26;
+that was wrong.
+
+Carol supplied three sheets in all — a per-file listing (structure), an A–Z index
+(cross-check), and a detail export (the descriptive bullets, matched on name; see
+`ALIASES` in `build.py` where the wording differs).

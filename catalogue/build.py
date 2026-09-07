@@ -12,7 +12,7 @@ import files as F
 ALIASES = {
     'beachcroft 1990': (1, 'Beachcroft (1967)'),
     'beis din guideline of kashrus of various foods ingredients':
-        (1, 'Beis Din Guideline of Kashrus & Various Food Ingredients'),
+        (1, 'Beis Din Guidelines of Kashrus & Food Ingredients'),
     'bestfoods uniliver': (1, 'BestFoods / Unilever'),
     'biotechnology kashrus': (1, 'Biotechnology and Kashrus'),
     'chief rabbinate of israel': (2, 'Chief Rabbinate'),
@@ -22,11 +22,17 @@ ALIASES = {
     'newspaper articles copies of articles': (6, 'Newspaper Articles'),
     'medicine kashrus': (7, 'Medicines'),
     'kashrus guide': (14, 'Policy Decisions with Regard to the Kashrus Guide'),
+    'gelatine project': (4, 'Gelatine'),
+    'court cases': (13, 'Court Cases (JFS, Rosie Ben Shushan)'),
+    'rabbi conway presentation synopsis products ingredients':
+        (13, 'Rabbi Conway: Presentation, Synopsis and Brief Biography'),
+    'overview of kashrus division current proposed procedures':
+        (7, 'Overview of Kashrus Division Procedure'),
 }
 for L in 'bcefghjk':
-    ALIASES[f'list info of fish {L}'] = (21, 'Fish List & Info B – K')
+    ALIASES[f'list info of fish {L}'] = (21, 'List & Info of Fish B–K')
 for L in 'lmoprs':
-    ALIASES[f'list info of fish {L}'] = (22, 'List & Info of Fish L – S')
+    ALIASES[f'list info of fish {L}'] = (22, 'List & Info of Fish L–S')
 
 def norm(s):
     return ' '.join(re.sub(r'[^a-z0-9 ]', ' ', s.lower()).split())
@@ -122,8 +128,10 @@ index_html = ''.join(
         f'<span class="ref">{", ".join(map(str, fs))}</span></li>' for t, fs in rows)
     + '</ul></div>' for L, rows in letters.items())
 
-conflicts_html = ''.join(
-    f'<li><b>{E(a)}</b> — {E(b)}</li>' for a, b in F.CONFLICTS)
+resolved_html = ''.join(
+    f'<li><b>{E(a)}</b> — {E(b)}</li>' for a, b in F.RESOLVED)
+outstanding_html = ''.join(
+    f'<li><b>{E(a)}</b> ({E(b)}) — {E(c)}</li>' for a, b, c in F.OUTSTANDING)
 typos_html = ', '.join(f'{E(a)} &rarr; {E(b)}' for a, b in F.TYPO_FIXES)
 
 doc = f'''<title>KLBD Archive Catalogue</title>
@@ -239,13 +247,17 @@ doc = f'''<title>KLBD Archive Catalogue</title>
 <div class="page notes">
   <div class="section-open notes-open">
     <div class="eyebrow">Appendix</div>
-    <h2>Points to Check</h2>
-    <p>Places where the two source sheets disagree, and the spellings that were
-    regularised. Nothing here changes what is in a file &mdash; only how it is recorded.</p>
+    <h2>Sources &amp; Corrections</h2>
+    <p>How this catalogue was reconciled. Nothing here changes what is in a file
+    &mdash; only how it is recorded.</p>
   </div>
-  <h4>Where the file list and the index disagree</h4>
-  <ul>{conflicts_html}</ul>
-  <p>The catalogue follows the per-file listing in each case.</p>
+  <h4>Checked against the shelf</h4>
+  <p>Every entry name and file number in Section One matches the spine label on the
+  binder, photographed in place. Where Carol&rsquo;s two sheets disagreed, the shelf
+  settles it:</p>
+  <ul>{resolved_html}</ul>
+  <h4>Still open</h4>
+  <ul>{outstanding_html}</ul>
   <h4>Spellings regularised</h4>
   <p>{typos_html}.</p>
 </div>
