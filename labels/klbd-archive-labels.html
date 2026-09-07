@@ -1,0 +1,334 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>KLBD Archive Spine Labels</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+<style>
+  :root{
+    --navy:#1c2b6b;
+    --navy-deep:#141f4e;
+    --ink:#10162f;
+    --hair:#c9cee2;
+    --ground:#e9ebf2;
+    --panel:#ffffff;
+    --panel-line:#d3d8e8;
+    --panel-ink:#2b3350;
+    --panel-mute:#5c6484;
+    --shadow:0 1px 3px rgba(20,31,78,.14), 0 10px 30px rgba(20,31,78,.10);
+
+    --label-w:60mm;    /* die-cut, across the spine */
+    --label-h:200mm;   /* die-cut, along the spine  */
+    --margin-x:28.5mm;  /* to the first label along the sheet */
+    --margin-y:5mm;     /* to the label's long edge           */
+    --bleed:4mm;       /* navy header overprint past the die-cut */
+    --offset-x:0mm;
+    --offset-y:0mm;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ground:#12141c; --panel:#1c1f2b; --panel-line:#2f3548;
+      --panel-ink:#dfe3f0; --panel-mute:#9aa2be;
+      --shadow:0 1px 3px rgba(0,0,0,.5), 0 14px 36px rgba(0,0,0,.45);
+    }
+  }
+  :root[data-theme="dark"]{
+    --ground:#12141c; --panel:#1c1f2b; --panel-line:#2f3548;
+    --panel-ink:#dfe3f0; --panel-mute:#9aa2be;
+    --shadow:0 1px 3px rgba(0,0,0,.5), 0 14px 36px rgba(0,0,0,.45);
+  }
+
+  /* The sheet prints LANDSCAPE: on a portrait A4 label sheet that puts each
+     200mm die-cut along the long edge with the artwork upright on the spine.
+     Laying it out this way avoids rotating anything in CSS — a rotated
+     absolutely-positioned box is mis-placed by Chromium's print pagination,
+     which silently corrupted every label in the PDF. */
+  @page{ size:A4 landscape; margin:0; }
+  *{ box-sizing:border-box; margin:0; padding:0; }
+  body{
+    background:var(--ground);
+    color:var(--panel-ink);
+    font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+    padding:0 0 14mm;
+  }
+
+  /* ---------- screen-only instruction panel ---------- */
+  .guide{ max-width:210mm; margin:0 auto; padding:26px 24px 22px; }
+  .eyebrow{
+    font-size:11px; font-weight:600; letter-spacing:.22em; text-transform:uppercase;
+    color:var(--panel-mute);
+  }
+  .guide h1{
+    font-size:clamp(26px,4.5vw,38px); font-weight:700; letter-spacing:-.015em;
+    line-height:1.08; margin:.35em 0 .3em; text-wrap:balance; color:var(--panel-ink);
+  }
+  .lede{
+    font-family:"Source Serif 4",Georgia,serif;
+    font-size:17px; line-height:1.55; max-width:62ch; color:var(--panel-mute);
+  }
+  .steps{
+    margin-top:20px; background:var(--panel);
+    border:1px solid var(--panel-line); border-radius:4px;
+    box-shadow:var(--shadow); display:grid; gap:0;
+  }
+  .step{
+    display:grid; grid-template-columns:26px 1fr; gap:14px;
+    padding:15px 20px; border-top:1px solid var(--panel-line);
+    font-size:14.5px; line-height:1.55;
+  }
+  .stepgroup{
+    padding:13px 20px 11px; border-top:1px solid var(--panel-line);
+    font-size:10.5px; font-weight:700; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--panel-mute);
+    background:color-mix(in srgb, var(--panel-line) 22%, transparent);
+  }
+  .stepgroup:first-child{ border-top:0; }
+  .step .k{ font-size:12px; font-weight:700; letter-spacing:.04em; color:var(--navy); padding-top:2px; }
+  :root[data-theme="dark"] .step .k{ color:#93a6e8; }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .step .k{ color:#93a6e8; } }
+  .step b{ font-weight:600; color:var(--panel-ink); }
+  .step .k, .step p{ margin:0; }
+  .step p{ color:var(--panel-mute); }
+  kbd{
+    font-family:"Archivo",monospace; font-size:12.5px; font-weight:600;
+    border:1px solid var(--panel-line); border-radius:3px; padding:1px 5px; color:var(--panel-ink);
+  }
+  .rule{
+    max-width:210mm; margin:30px auto 0; padding:0 24px;
+    display:flex; align-items:center; gap:14px;
+    font-size:11px; font-weight:600; letter-spacing:.2em; text-transform:uppercase;
+    color:var(--panel-mute);
+  }
+  .rule::after{ content:""; flex:1; height:1px; background:var(--panel-line); }
+
+  /* ---------- the sheets ---------- */
+  .sheets{ padding-top:16px; }
+  .sheet{
+    width:297mm; height:210mm;
+    padding: calc(var(--margin-y) + var(--offset-y)) calc(var(--margin-x) + var(--offset-x));
+    background:#ffffff; margin:0 auto 12mm;
+    box-shadow:var(--shadow); page-break-after:always;
+    display:flex;
+  }
+  .sheet:last-child{ page-break-after:auto; }
+  .sheet, .label, .hdr{ -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+
+  /* The die-cut sits landscape on the sheet; the artwork is portrait and
+     rotated into it, so it reads correctly once stuck down a standing spine. */
+  .label{
+    flex:0 0 auto;
+    width:var(--label-w); height:var(--label-h);
+    background:#ffffff;
+    outline:.2mm dashed #b9c0d8; outline-offset:-.1mm;
+    /* not overflow:hidden — the header bleeds past the die-cut on purpose */
+  }
+  .spine{
+    width:100%; height:100%;
+    display:flex; flex-direction:column;
+    color:var(--ink);
+  }
+
+  .hdr{
+    flex:0 0 auto;
+    background:var(--navy); color:#fff;
+    text-align:center;
+    /* Full bleed: the navy runs past the label's top and sides so a
+       millimetre of printer drift can't leave a white sliver at the die-cut.
+       Overspill lands on the backing between labels, and neighbouring
+       headers are the same navy, so the overlap is invisible. */
+    margin:calc(var(--bleed) * -1) calc(var(--bleed) * -1) 0;
+    padding:calc(7mm + var(--bleed)) calc(4mm + var(--bleed)) 6mm;
+  }
+  .hdr .brand{
+    font-size:9.5pt; font-weight:700; letter-spacing:.15em; text-transform:uppercase;
+    line-height:1.15;
+  }
+  .hdr .div{
+    width:14mm; height:.4mm; background:rgba(255,255,255,.45);
+    margin:2.6mm auto 2.4mm;
+  }
+  .hdr .word{
+    font-size:7pt; font-weight:500; letter-spacing:.24em; text-transform:uppercase;
+    opacity:.8; line-height:1;
+  }
+  .hdr .num{ font-size:32pt; font-weight:700; line-height:1; margin-top:1.5mm; letter-spacing:-.02em; }
+
+  .items{
+    font-family:"Source Serif 4",Georgia,"Times New Roman",serif;
+    flex:1 1 auto; min-height:0;
+    padding:9mm 5mm 7mm;
+    display:flex; flex-direction:column; justify-content:flex-start; gap:2.6mm;
+    font-size:12pt; line-height:1.25;
+    overflow:hidden;
+  }
+  .items li{ list-style:none; padding-left:3.6mm; position:relative; }
+  /* a lone entry is the label's title, not a list of one */
+  .items.single{ text-align:center; }
+  .items.single li{ padding-left:0; }
+  .items.single li::before{ display:none; }
+  .items li::before{
+    content:""; position:absolute; left:0; top:.46em;
+    width:1.4mm; height:1.4mm; border-radius:50%; background:var(--navy);
+  }
+  .foot{
+    flex:0 0 auto;
+    padding:0 4mm 5mm; text-align:center;
+    border-top:.3mm solid var(--hair); margin:0 4mm;
+    padding-top:3mm;
+    font-size:6.5pt; font-weight:500; letter-spacing:.13em; text-transform:uppercase;
+    color:#5b6486;
+  }
+
+
+  /* ---------- calibration marks (print on the sheet margins, never on a label) ----------
+     The die-cut is fixed; the only variable is whether the printer reproduced
+     the page at exactly 100%. These land on the backing and get discarded. */
+  .sheet{ position:relative; }
+  .marks{ position:absolute; inset:0; pointer-events:none; color:#8b93ad; }
+  .marks .tick{
+    position:absolute; width:.3mm; background:#8b93ad;
+    top:0; height:3.5mm;
+  }
+  .marks .tick.b{ top:auto; bottom:0; }
+  .ruler{
+    position:absolute; left:9mm; top:calc(50% - 50mm);
+    width:2.6mm; height:100mm;
+    border:.25mm solid #8b93ad; border-left:0; border-right:0;
+  }
+  .ruler::before{
+    content:""; position:absolute; left:1.15mm; top:0; bottom:0; width:.3mm; background:#8b93ad;
+  }
+  .ruler span{
+    position:absolute; left:4.5mm; top:50%;
+    transform:translateY(-50%) rotate(90deg); transform-origin:left center;
+    white-space:nowrap; font-size:6.5pt; letter-spacing:.12em; text-transform:uppercase;
+  }
+
+  @media print{
+    body{ background:#fff; padding:0; }
+    .guide, .rule{ display:none; }
+    .sheets{ padding-top:0; }
+    .sheet{ box-shadow:none; margin:0; }
+    .label{ outline:none; }
+  }
+  @media (max-width:310mm){ .sheets{ overflow-x:auto; } }
+</style>
+</head>
+<body>
+<div class="guide" id="g">
+  <div class="eyebrow">Avery L7171 &middot; 200 &times; 60&nbsp;mm &middot; 4 per A4 sheet</div>
+  <h1>KLBD Archive spine labels</h1>
+  <p class="lede">All thirty archive files, laid out at true size across eight sheets. Each label reads the right way up once it is on a binder standing on the shelf. The page prints <strong>landscape</strong>, which lays the labels along the sheet to match the die-cut. Settings below are for Chrome or Edge on Windows, printing to the Lexmark XC9255.</p>
+
+  <div class="steps">
+    <div class="stepgroup">In Chrome or Edge on the PC</div>
+    <div class="step"><span class="k">01</span><p>Press <kbd>Ctrl</kbd> + <kbd>P</kbd> and pick the <b>Lexmark XC9255</b>. Open <b>More settings</b>.</p></div>
+    <div class="step"><span class="k">02</span><p>Tick <b>Background graphics</b>. Without it the navy panels print blank &mdash; this is the one setting people miss.</p></div>
+    <div class="step"><span class="k">03</span><p>Set <b>Scale</b> to <b>Custom &rarr; 100</b>. Chrome&rsquo;s &ldquo;Default&rdquo; scale quietly shrinks the page to fit the printable area, which throws the alignment out by a few millimetres.</p></div>
+    <div class="step"><span class="k">04</span><p>Set <b>Layout</b> to <b>Landscape</b> &mdash; this is what turns the artwork the right way up along the spine on a portrait A4 label sheet. Set <b>Margins</b> to <b>None</b>, <b>Paper size</b> to <b>A4</b>, and untick <b>Headers and footers</b>.</p></div>
+
+    <div class="stepgroup">At the Lexmark</div>
+    <div class="step"><span class="k">05</span><p>Load the label sheets in the <b>multipurpose / bypass tray</b> on the side, not in a paper cassette. Cassettes bend the sheet tightly and can peel labels off inside the machine.</p></div>
+    <div class="step"><span class="k">06</span><p>On the touchscreen set that tray&rsquo;s <b>paper type</b> to <b>Labels</b> and <b>size</b> to <b>A4</b>. This slows the feed and adjusts the fuser &mdash; running labels as plain paper is what causes jams and adhesive on the rollers.</p></div>
+    <div class="step"><span class="k">07</span><p>The XC9255 takes A3, so double-check it hasn&rsquo;t auto-picked an A3 tray. If the machine holds jobs for badge or PIN release, release it there as usual.</p></div>
+
+    <div class="stepgroup">Before you commit the label stock</div>
+    <div class="step"><span class="k">08</span><p>Print <b>one test on plain paper</b> and measure the <b>100&nbsp;mm bar</b> printed in the margin, outer edge to outer edge. If it reads short (96&ndash;98&nbsp;mm is typical), the printer is shrinking the page &mdash; find and turn off &ldquo;fit to printable area&rdquo; in the driver. Nothing else will line up until that bar measures 100.</p></div>
+    <div class="step"><span class="k">09</span><p>Then lay that test over a label sheet at a window. The <b>five ticks</b> along the top and bottom margins should sit exactly on the die-cut lines between labels. If the bar reads 100 but the ticks drift, tell me by how much at the last tick and I&rsquo;ll correct the spacing.</p></div>
+    <div class="step"><span class="k">10</span><p>Feed label sheets <b>one at a time</b>. Peel each label and apply it down the binder spine, <b>number at the top</b>. If the print lands a millimetre out, adjust <b>--offset-x</b> / <b>--offset-y</b> in the source file. Sheet 1 carries files 1&ndash;4, sheet 2 files 5&ndash;8, and so on.</p></div>
+  </div>
+</div>
+
+
+
+<div class="sheets" id="out"></div>
+
+<script>
+const FILES = [{"n": 1, "items": ["AKO", "Ambassador Hotel", "An Inspector Calls", "Beachcroft (1967)", "Beis Din Guidelines of Kashrus & Food Ingredients", "Beis Din Review", "BestFoods / Unilever", "Biotechnology and Kashrus", "Blooms", "Bugs"]}, {"n": 2, "items": ["Carmine", "Carmelli", "Cheese", "Chestnuts", "Cigarettes \u2013 Cigars", "Chief Rabbinate", "Conjoint Relating to Pesach \u201988\u2013\u201902"]}, {"n": 3, "items": ["Dayan Lerner", "El Al"]}, {"n": 4, "items": ["Factory Visits Review (Cert. Process Project)", "Gelatine", "Spielsinger & Abraham / Wagner / Kinloss", "Kavana"]}, {"n": 5, "items": ["Hillel House", "Hindquarters", "Holland", "Honey", "Innocent Drinks", "Israel", "Isinglass", "Kashrus Commission", "Kashrus for the Community", "Kashrus List (Confectionary) 1962", "Marmite"]}, {"n": 6, "items": ["Halacha Files", "Magazine Articles", "Newspaper Articles"]}, {"n": 7, "items": ["Marketing", "MBD", "Medicines", "Misc.", "Milk", "Norwood Ravenswood", "Overview of Kashrus Division Procedure", "Obituaries / Memorial Addresses"]}, {"n": 8, "items": ["Pesach", "OU"]}, {"n": 9, "items": ["Rakusens", "Paris Beis Din", "Shmita", "Shomer Seminar 2002", "Various Correspondence", "Whisky Research & Articles AOP", "Wines"]}, {"n": 10, "items": ["Chief Rabbinate Strasbourg", "Review of Financial Structure of LBD 1994", "The White House", "Travel", "Vinegar", "Waxing of Fruit & Veg", "Xanthan Gum", "Zhangjiagang Legal"]}, {"n": 11, "items": ["Sugar \u2013 Tate & Lyle \u2013 Cube Sugar \u2013 Pesach", "Tartaric Acid", "Tomor Margarine", "Transactions of the Jewish Historical Society of England", "Very Interesting Articles"]}, {"n": 12, "items": ["Queries \u2013 Shaalos", "The Mesorah of Kosher Birds & Mammals", "Shellac"]}, {"n": 13, "items": ["Rabbi Conway: Presentation, Synopsis and Brief Biography", "Kitnios", "Important Papers", "Feasibility of National Kosher UK Certification", "Buckingham Palace Goes Kosher", "Kashrus Meeting of the Beis Din", "Report: Kashrus & Shechita Activities", "Letters & Kashrus Regulations", "Court Cases (JFS, Rosie Ben Shushan)", "Legal (CER)"]}, {"n": 14, "items": ["Kashrus / KLBD Review", "Kashrus Certificates", "Kashrus Committee Meetings", "Kashrus Financial Issues", "Kashrus Issues", "Kashrus Promotion Campaign", "KLBD Articles", "Policy Decisions with Regard to the Kashrus Guide"]}, {"n": 15, "items": ["Factory Visits"]}, {"n": 16, "items": ["CDs", "Cassettes", "Photos"]}, {"n": 17, "items": ["Rabbi Conway\u2019s Notebooks"]}, {"n": 18, "items": ["Rabbi Silver – Part 1"]}, {"n": 19, "items": ["Rabbi Silver – Part 2"]}, {"n": 20, "items": ["Fish List", "Analysis of Vertebrae Structure"]}, {"n": 21, "items": ["Scales", "Oils", "British Museum", "Fish Found in Italy", "List & Info of Fish B\u2013K"]}, {"n": 22, "items": ["List & Info of Fish L\u2013S"]}, {"n": 23, "items": ["Newspapers", "Tuna Rabbinic Material (1)"]}, {"n": 24, "items": ["Tuna: Scientific Material (2)", "Tuna: Scientific Material (3)"]}, {"n": 25, "items": ["Tuna + Fish: Miscellaneous incl. Specimen of Bonito Scales (4)", "Miscellaneous (5)", "W. Simon & Sons Tuna Production", "List of Fish (T)", "Fishes & Crustaceans of Cyprus", "Kosher & Non-Kosher Fish in Various Countries"]}, {"n": 26, "items": ["Tuna: Scientific Names, Description, Illustrations (6 & 7)", "Correspondence (8)", "Biblical / Talmudical (9)", "Rabbinical Literature (10)", "Nomenclature (11)"]}, {"n": 27, "items": ["Turbot – Part 1"]}, {"n": 28, "items": ["Turbot – Part 2"]}, {"n": 29, "items": ["Shechita", "Divrei Torah", "JFS", "Kedassia"]}, {"n": 30, "items": ["Eruv"]}];
+
+const out = document.getElementById('out');
+let sheet = null;
+
+FILES.forEach((f, i) => {
+  if (i % 4 === 0) {
+    sheet = document.createElement('div');
+    sheet.className = 'sheet';
+    out.appendChild(sheet);
+  }
+
+  const label = document.createElement('div');
+  label.className = 'label';
+
+  const spine = document.createElement('div');
+  spine.className = 'spine';
+  spine.innerHTML =
+    '<div class="hdr">' +
+      '<div class="brand">KLBD<br>Archive</div>' +
+      '<div class="div"></div>' +
+      '<div class="word">File</div>' +
+      '<div class="num">' + f.n + '</div>' +
+    '</div>';
+
+  const ul = document.createElement('ul');
+  ul.className = 'items' + (f.items.length === 1 ? ' single' : '');
+  f.items.forEach(t => {
+    const li = document.createElement('li');
+    li.textContent = t;
+    ul.appendChild(li);
+  });
+  spine.appendChild(ul);
+
+  const foot = document.createElement('div');
+  foot.className = 'foot';
+  foot.textContent = 'London Beth Din \u00b7 Kashrus Division';
+  spine.appendChild(foot);
+
+  label.appendChild(spine);
+  sheet.appendChild(label);
+
+  if (i % 4 === 3 || i === FILES.length - 1) {
+  // Calibration marks: boundary ticks on the die-cut lines, and a true 100mm bar.
+  const marks = document.createElement('div');
+  marks.className = 'marks';
+  for (let k = 0; k <= 4; k++) {
+    for (const cls of ['tick', 'tick b']) {
+      const t = document.createElement('div');
+      t.className = cls;
+      t.style.left = `calc(var(--margin-x) + var(--offset-x) + ${k} * var(--label-w))`;
+      marks.appendChild(t);
+    }
+  }
+  const ruler = document.createElement('div');
+  ruler.className = 'ruler';
+  ruler.innerHTML = '<span>100 mm &mdash; outer edge to outer edge</span>';
+  marks.appendChild(ruler);
+  sheet.appendChild(marks);
+  }
+});
+
+// Shrink each contents list until it fits the 200mm spine.
+function fit(){
+  document.querySelectorAll('.items').forEach(ul => {
+    const n = ul.children.length;
+    let size = n <= 2 ? 20 : n <= 4 ? 17 : n <= 7 ? 14 : 12;
+    let gap  = n <= 4 ? 4 : n <= 7 ? 3 : 2.2;
+    ul.style.fontSize = size + 'pt';
+    ul.style.gap = gap + 'mm';
+    while (ul.scrollHeight > ul.clientHeight + 1 && size > 6.5) {
+      size -= 0.25;
+      gap = Math.max(1.2, gap - 0.06);
+      ul.style.fontSize = size + 'pt';
+      ul.style.gap = gap + 'mm';
+    }
+  });
+}
+if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fit); }
+fit();
+window.addEventListener('beforeprint', fit);
+</script>
+
+</body>
+</html>
